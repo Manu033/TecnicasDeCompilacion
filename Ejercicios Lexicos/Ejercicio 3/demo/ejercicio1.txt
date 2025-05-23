@@ -1,0 +1,4 @@
+int suma = 10 + 5;
+if (suma > 10) {
+    print("El resultado es mayor que 10");
+}

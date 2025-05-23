@@ -1,0 +1,29 @@
+FECHA DD/MM/AAAA: (0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/([0-9]{4})
+FECHA AAAA-MM-DD: ([0-9]{4})-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])
+
+EMAIL: [a-zA-Z\d\W_]+@[a-zA-Z]+.[a-z]{3}
+
+CUIL/CUIT: [\d]{2}-[\d]{8}-[\d]{1}
+
+DNI: [\d]{7,8}
+
+NUMERO DE TELEFONO INTERNACIONAL: [+][0-9]{10,15}
+NUMERO DE TELEFONO NACIONAL: [0-9]{10,12}
+
+CODIGO POSTAL: [0-9A-Z]{4,7}
+
+COMENTARIOS DE UNA LINEA: \/\/[\s\S]*
+COMENTARIOS DE BLOQUE: \/\*[\s\S]*?\*\/
+
+NOMBRES Y APELLIDOS: [a-zA-Z\W]+
+
+CONTRASEÑA SEGURA: (?=.*[a-z])(?=.*[A-Z])(?=.*[\d])(?=.*[\W_])[a-zA-Z\d\W_]{8,}
+
+URLs: https?:\/\/(www\.)?[a-zA-Z0-9\-]+\.[a-z]{2,}([\/\w\-\.\?\=\&\#]*)?
+
+DIRECCIONES IP:\b((25[0-5]|2[0-4][0-9]|1?[0-9]{1,2})\.){3}(25[0-5]|2[0-4][0-9]|1?[0-9]{1,2})\b
+
+MATRICULAS: \b([a-zA-Z]{3} ?\d{3}|[a-zA-Z]{2} ?\d{3} ?[a-zA-Z]{2})\b
+
+TARJETAS DE CREDITO: \b(?:\d[ -]*?){13,19}\b
+
