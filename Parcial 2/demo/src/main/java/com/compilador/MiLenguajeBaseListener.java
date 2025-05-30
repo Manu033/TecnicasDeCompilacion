@@ -40,6 +40,18 @@ public class MiLenguajeBaseListener implements MiLenguajeListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterSentenciaInterior(MiLenguajeParser.SentenciaInteriorContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitSentenciaInterior(MiLenguajeParser.SentenciaInteriorContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterSentenciaBreak(MiLenguajeParser.SentenciaBreakContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -287,6 +299,18 @@ public class MiLenguajeBaseListener implements MiLenguajeListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitOperadorBinario(MiLenguajeParser.OperadorBinarioContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterComparadorBinario(MiLenguajeParser.ComparadorBinarioContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitComparadorBinario(MiLenguajeParser.ComparadorBinarioContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

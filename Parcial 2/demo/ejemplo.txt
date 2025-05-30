@@ -4,5 +4,9 @@ int suma(int a, int b) {
 
 void main() {
     int resultado;
-    resultado = suma(5, 3);
+    resultado = suma (5, 3);
+    resultado ++;
 }
+
+
+

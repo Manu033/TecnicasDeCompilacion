@@ -1,4 +1,4 @@
-// Generated from c:/Documentos Manu/Facultad UBP/Semestre 9/TC/TCGit/ProyectoFinal/demo/src/main/antlr4/com/compilador/MiLenguaje.g4 by ANTLR 4.13.1
+// Generated from c:/Documentos Manu/Facultad UBP/Semestre 9/TC/TCGit/Parcial 2/demo/src/main/antlr4/com/compilador/MiLenguaje.g4 by ANTLR 4.13.1
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.Token;

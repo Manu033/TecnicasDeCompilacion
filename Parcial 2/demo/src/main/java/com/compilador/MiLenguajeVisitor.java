@@ -23,6 +23,12 @@ public interface MiLenguajeVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitSentencia(MiLenguajeParser.SentenciaContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link MiLenguajeParser#sentenciaInterior}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitSentenciaInterior(MiLenguajeParser.SentenciaInteriorContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link MiLenguajeParser#sentenciaBreak}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -157,6 +163,12 @@ public interface MiLenguajeVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitOperadorBinario(MiLenguajeParser.OperadorBinarioContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MiLenguajeParser#comparadorBinario}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitComparadorBinario(MiLenguajeParser.ComparadorBinarioContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link MiLenguajeParser#argumentos}.
 	 * @param ctx the parse tree
