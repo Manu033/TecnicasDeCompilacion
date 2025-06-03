@@ -6,14 +6,18 @@ programa
 
 
 sentencia
-    : sentenciaIf
-    | declaracionFuncion
+    : declaracionFuncion
     | declaracionVariable
     | asignacion
-    | retorno
-    | sentenciaBreak        // <— añadido
-    | sentenciaContinue     // <— añadido    
     ;
+sentenciaInterior
+    : sentencia
+    | retorno
+    | sentenciaBreak
+    | sentenciaContinue
+    | sentenciaIf
+    ;
+
 
 // Añadir las reglas para break y continue en el sintáctico
 sentenciaBreak
@@ -29,7 +33,7 @@ sentenciaIf
     ;
 
 bloque
-    : LA (sentencia)* LC
+    : LA (sentenciaInterior)* LC
     ;
 
 declaracionFuncion
@@ -50,6 +54,8 @@ declaracionVariable
 
 asignacion
     : ID IGUAL expresion PYC
+    | ID SUM SUM PYC
+    | ID RES RES PYC
     ;
 
 retorno
@@ -65,20 +71,23 @@ tipo
     ;
 
 expresion
-    : expresion operadorBinario expresion     #expBinaria
+    : ID PA argumentos? PC                    #expFuncion
+    | expresion (operadorBinario | comparadorBinario) expresion     #expBinaria
     | NOT expresion                           #expNegacion
     | PA expresion PC                         #expParentizada
     | ID                                      #expVariable
     | INTEGER                                 #expEntero
     | DECIMAL                                 #expDecimal
     | CHARACTER                               #expCaracter
-    | STRING_LITERAL                          # expCadena    // <— añadido
-    | ID PA argumentos? PC                    #expFuncion
+    | STRING_LITERAL                          # expCadena    // <— añadido                
     ;
 
 operadorBinario
-    : SUM | RES | MUL | DIV | MOD
-    | MAYOR | MAYOR_IGUAL | MENOR | MENOR_IGUAL | EQL | DISTINTO
+    : SUM | RES | MUL | DIV | MOD 
+    ;
+
+comparadorBinario
+    : MAYOR | MAYOR_IGUAL | MENOR | MENOR_IGUAL | EQL | DISTINTO
     | AND | OR
     ;
     

@@ -23,6 +23,12 @@ public interface MiLenguajeVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitSentencia(MiLenguajeParser.SentenciaContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link MiLenguajeParser#sentenciaInterior}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitSentenciaInterior(MiLenguajeParser.SentenciaInteriorContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link MiLenguajeParser#sentenciaBreak}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -131,6 +137,13 @@ public interface MiLenguajeVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitExpEntero(MiLenguajeParser.ExpEnteroContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code expFuncion}
+	 * labeled alternative in {@link MiLenguajeParser#expresion}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitExpFuncion(MiLenguajeParser.ExpFuncionContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code expVariable}
 	 * labeled alternative in {@link MiLenguajeParser#expresion}.
 	 * @param ctx the parse tree
@@ -145,18 +158,17 @@ public interface MiLenguajeVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitExpCadena(MiLenguajeParser.ExpCadenaContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code expFuncion}
-	 * labeled alternative in {@link MiLenguajeParser#expresion}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitExpFuncion(MiLenguajeParser.ExpFuncionContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link MiLenguajeParser#operadorBinario}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitOperadorBinario(MiLenguajeParser.OperadorBinarioContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MiLenguajeParser#comparadorBinario}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitComparadorBinario(MiLenguajeParser.ComparadorBinarioContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link MiLenguajeParser#argumentos}.
 	 * @param ctx the parse tree
