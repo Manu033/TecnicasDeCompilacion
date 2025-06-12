@@ -112,6 +112,30 @@ public class MiLenguajeBaseListener implements MiLenguajeListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterSentenciaWhile(MiLenguajeParser.SentenciaWhileContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitSentenciaWhile(MiLenguajeParser.SentenciaWhileContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterSentenciaFor(MiLenguajeParser.SentenciaForContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitSentenciaFor(MiLenguajeParser.SentenciaForContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterParametros(MiLenguajeParser.ParametrosContext ctx) { }
 	/**
 	 * {@inheritDoc}

@@ -93,6 +93,10 @@ public class TablaSimbolos {
         return this.ambitoActual;
     }
     
+    public List<Simbolo> getSimbolos() {
+    return simbolos;
+    }
+
     /**
      * Agrega un símbolo a la tabla
      * @param simbolo Símbolo a agregar

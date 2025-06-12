@@ -17,7 +17,7 @@ public class App {
         }
 
         try {
-            // 1. ANÁLISIS LÉXICO
+            // === ANÁLISIS LÉXICO ===
             System.out.println("Analizando archivo: " + args[0]);
             CharStream input = CharStreams.fromFileName(args[0]);
 
@@ -26,7 +26,7 @@ public class App {
             lexer.removeErrorListeners();
             lexer.addErrorListener(new BaseErrorListener() {
                 @Override
-                public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, 
+                public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol,
                                         int line, int charPositionInLine, String msg, RecognitionException e) {
                     erroresLexicos.add("ERROR LÉXICO en línea " + line + ":" + charPositionInLine + " - " + msg);
                     throw new ParseCancellationException(msg);
@@ -53,13 +53,13 @@ public class App {
                 return;
             }
 
-            // 2. ANÁLISIS SINTÁCTICO
+            // === ANÁLISIS SINTÁCTICO ===
             MiLenguajeParser parser = new MiLenguajeParser(tokens);
             List<String> erroresSintacticos = new ArrayList<>();
             parser.removeErrorListeners();
             parser.addErrorListener(new BaseErrorListener() {
                 @Override
-                public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, 
+                public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol,
                                         int line, int charPositionInLine, String msg, RecognitionException e) {
                     erroresSintacticos.add("ERROR SINTÁCTICO en línea " + line + ":" + charPositionInLine + " - " + msg);
                 }
@@ -76,10 +76,10 @@ public class App {
                 System.out.println(tree.toStringTree(parser));
             }
 
-            // 3. VISUALIZACIÓN DEL ÁRBOL SINTÁCTICO
+            // === VISUALIZACIÓN DEL ÁRBOL ===
             generarImagenArbolSintactico(tree, parser);
 
-            // 4. ANÁLISIS SEMÁNTICO
+            // === ANÁLISIS SEMÁNTICO ===
             SimbolosListener listener = new SimbolosListener();
             ParseTreeWalker walker = new ParseTreeWalker();
             walker.walk(listener, tree);
@@ -93,6 +93,12 @@ public class App {
                 erroresSemanticos.forEach(System.out::println);
             } else {
                 System.out.println("\n✅ Análisis semántico completado sin errores.");
+            }
+
+            List<String> advertencias = listener.obtenerAdvertenciasNoCriticas();
+            if (!advertencias.isEmpty()) {
+                System.out.println("\n=== ADVERTENCIAS ===");
+                advertencias.forEach(System.out::println);
             }
 
         } catch (IOException e) {
@@ -122,8 +128,7 @@ public class App {
             frame.add(scrollPane);
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setSize(800, 600);
-            //frame.setVisible(true);
-            viewer.open();  // Esto lanza una ventana gráfica con el árbol de análisis
+            // viewer.open(); // Puedes activar esta línea para mostrarlo automáticamente
 
         } catch (Exception e) {
             System.err.println("❌ Error al mostrar árbol sintáctico: " + e.getMessage());

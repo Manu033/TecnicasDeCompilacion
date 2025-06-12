@@ -1,27 +1,30 @@
 grammar MiLenguaje;
 
+// Reglas del Parser (Gramática Sintáctica)
+
 programa
     : (sentencia)* EOF
     ;
-
 
 sentencia
     : declaracionFuncion
     | declaracionVariable
     | asignacion
     ;
+
+// Reglas para sentencias que pueden aparecer dentro de un bloque (funciones, bucles, etc.)
 sentenciaInterior
     : sentencia
     | retorno
     | sentenciaBreak
     | sentenciaContinue
     | sentenciaIf
+    | sentenciaWhile
+    | sentenciaFor
     ;
 
-
-// Añadir las reglas para break y continue en el sintáctico
 sentenciaBreak
-    : BREAK PYC            
+    : BREAK PYC
     ;
 
 sentenciaContinue
@@ -40,6 +43,14 @@ declaracionFuncion
     : tipo ID PA parametros? PC bloque
     ;
 
+sentenciaWhile
+    : WHILE PA expresion PC bloque
+    ;
+
+sentenciaFor
+    : FOR PA declaracionVariable? PYC expresion? PYC asignacion? PC bloque
+    ;
+
 parametros
     : parametro (COMA parametro)*
     ;
@@ -48,14 +59,15 @@ parametro
     : tipo ID
     ;
 
+// FIX CLAVE: Se permite una asignación opcional al momento de la declaración de la variable.
 declaracionVariable
-    : tipo ID PYC
+    : tipo ID (IGUAL expresion)? PYC
     ;
 
 asignacion
-    : ID IGUAL expresion PYC
-    | ID SUM SUM PYC
-    | ID RES RES PYC
+    : ID IGUAL expresion PYC // Asignación simple
+    | ID SUM SUM PYC      // Incremento (ej: x++)
+    | ID RES RES PYC      // Decremento (ej: x--)
     ;
 
 retorno
@@ -67,94 +79,99 @@ tipo
     | CHAR
     | DOUBLE
     | VOID
-    | STRING  
+    | STRING
     ;
 
+// Reglas para expresiones con etiquetas para facilitar el procesamiento en el visitor/listener
 expresion
-    : ID PA argumentos? PC                    #expFuncion
-    | expresion (operadorBinario | comparadorBinario) expresion     #expBinaria
-    | NOT expresion                           #expNegacion
-    | PA expresion PC                         #expParentizada
-    | ID                                      #expVariable
-    | INTEGER                                 #expEntero
-    | DECIMAL                                 #expDecimal
-    | CHARACTER                               #expCaracter
-    | STRING_LITERAL                          # expCadena    // <— añadido                
+    : ID PA argumentos? PC                     #expFuncion      // Llamada a función
+    | expresion (operadorBinario | comparadorBinario) expresion    #expBinaria      // Operaciones binarias (matemáticas, lógicas, comparación)
+    | NOT expresion                            #expNegacion     // Negación lógica
+    | PA expresion PC                          #expParentizada  // Expresión entre paréntesis
+    | ID                                       #expVariable     // Uso de una variable
+    | INTEGER                                  #expEntero       // Número entero
+    | DECIMAL                                  #expDecimal      // Número decimal
+    | CHARACTER                                #expCaracter     // Carácter
+    | STRING_LITERAL                           #expCadena       // Cadena de texto
     ;
 
 operadorBinario
-    : SUM | RES | MUL | DIV | MOD 
+    : SUM | RES | MUL | DIV | MOD
     ;
 
 comparadorBinario
     : MAYOR | MAYOR_IGUAL | MENOR | MENOR_IGUAL | EQL | DISTINTO
     | AND | OR
     ;
-    
+
 argumentos
     : expresion (COMA expresion)*
     ;
-PA   : '(' ;
-PC   : ')' ;
-CA   : '[' ;
-CC   : ']' ;
-LA   : '{' ;
-LC   : '}' ;
 
-PYC  : ';' ;
-COMA : ',' ;
 
-IGUAL : '=' ;
+// Reglas del Lexer (Tokens)
+// ¡IMPORTANTE! El orden de las reglas del lexer importa.
+// Las palabras clave deben ir ANTES que ID para que ANTLR las reconozca correctamente.
 
-MAYOR  : '>' ;
+// Palabras clave
+FOR       : 'for' ;
+WHILE     : 'while' ;
+IF        : 'if' ;
+ELSE      : 'else' ;
+INT       : 'int' ;
+CHAR      : 'char' ;
+DOUBLE    : 'double' ;
+VOID      : 'void' ;
+STRING    : 'String' ; // Asegúrate de que tu lenguaje distingue entre String y char para literales
+RETURN    : 'return' ;
+BREAK     : 'break' ;
+CONTINUE  : 'continue' ;
+
+// Operadores y delimitadores
+PA        : '(' ;
+PC        : ')' ;
+CA        : '[' ;
+CC        : ']' ;
+LA        : '{' ;
+LC        : '}' ;
+PYC       : ';' ;
+COMA      : ',' ;
+IGUAL     : '=' ;
+MAYOR     : '>' ;
 MAYOR_IGUAL: '>=' ;
-MENOR  : '<' ;
+MENOR     : '<' ;
 MENOR_IGUAL: '<=' ;
-EQL  : '==' ;
+EQL       : '==' ;
 DISTINTO  : '!=' ;
+SUM       : '+' ;
+RES       : '-' ;
+MUL       : '*' ;
+DIV       : '/' ;
+MOD       : '%' ;
+OR        : '||' ;
+AND       : '&&' ;
+NOT       : '!'   ;
 
-SUM  : '+' ;
-RES  : '-' ;
-MUL  : '*' ;
-DIV  : '/' ;
-MOD  : '%' ;
+// Literales
+INTEGER   : DIGITO+ ;
+DECIMAL   : INTEGER '.' DIGITO+ ; // Asegúrate de que DECIMAL tenga al menos un dígito después del punto
+CHARACTER : '\'' (~['\r\n] | '\\' .) '\'' ; // Un solo carácter, puede ser escape
+STRING_LITERAL : '"' (~["\\\r\n] | '\\' .)* '"' ; // Cualquier carácter excepto comilla o salto de línea, o secuencia de escape
 
-OR   : '||' ;
-AND  : '&&' ;
-NOT  : '!'  ;
+// Identificador (Debe ir DESPUÉS de todas las palabras clave)
+ID : (LETRA | '_') (LETRA | DIGITO | '_')*;
 
-FOR   : 'for' ;
-WHILE : 'while' ;
-
-IF    : 'if' ;
-ELSE  : 'else' ;
-
-INT     : 'int' ;
-CHAR    : 'char' ;
-DOUBLE  : 'double' ;
-VOID    : 'void' ;
-
-// Nuevo tipo de dato
-STRING  : 'String' ;
-
-RETURN : 'return' ;
-
-ID : (LETRA | '_') (LETRA | DIGITO | '_')* ;
-INTEGER : DIGITO+ ;
-DECIMAL : INTEGER '.' INTEGER ;
-CHARACTER : '\'' (~['\r\n] | '\\' .) '\'' ;
-STRING_LITERAL : '"' (~["\\\r\n] | '\\' .)* '"' ;
-
-// Control de bucle
-BREAK    : 'break' ;
-CONTINUE : 'continue' ;
-
+// Tokens ocultos (whitespace, comentarios)
 COMENTARIO_LINEA : '//' ~[\r\n]* -> skip ;
-COMENTARIO_BLOQUE : '/*' .*? '*/' -> skip ;
+COMENTARIO_BLOQUE : '/*' .*? '*/' -> skip ; // Non-greedy match para evitar problemas con /* /* */ */
 
-WS : [ \r\n\t] -> skip ;
+WS : [ \r\n\t] -> skip ; // Espacios, saltos de línea, tabulaciones
 
-OTRO : . ;
+// Regla para atrapar cualquier carácter no reconocido
+OTRO : . ; // ¡CUIDADO! Esta regla puede ocultar errores de tipografía.
+           // Es útil para depuración inicial, pero en un compilador final,
+           // se preferiría que ANTLR genere un error para caracteres no reconocidos.
 
+// Fragmentos (no se convierten en tokens directamente, son para componer otras reglas)
 fragment LETRA : [A-Za-z] ;
 fragment DIGITO : [0-9] ;

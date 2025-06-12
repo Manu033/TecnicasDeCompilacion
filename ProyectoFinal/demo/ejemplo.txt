@@ -1,8 +1,48 @@
-int suma(int a, int b) {
-    return a + b;
+// ❌ Función definida pero nunca usada
+int noUsada(int x) {
+    return x * 2;
+}
+
+// ✅ Función con return incorrecto
+double devolverNada() {
+    // ❌ falta return
+}
+
+// ✅ Función con parámetro duplicado
+int sumar(int a, int a) {  // ❌ parámetro duplicado
+    return a + a;
 }
 
 void main() {
+    // ❌ Declaración duplicada en mismo ámbito
     int resultado;
-    resultado = suma(5, 3);
+    double resultado;
+
+    // ❌ Declaración de variable no utilizada
+    int sinUsar;
+
+    // ❌ Variable no inicializada antes de uso
+    int noInicializada;
+    int total = noInicializada + 1;
+
+    // ❌ Variable no declarada
+    x = 5;
+
+    // ❌ Asignación de tipo incorrecto
+    int texto = "Hola";
+
+    // ✅ Llamada a función aún no definida (se simula orden incorrecto)
+    valor = doble(10);  // ❌ doble aún no está declarada (si el parser es sensible al orden)
+
+    // ❌ Bucle infinito (si lo tenés implementado en la gramática)
+    while (true) {
+    }
+
+    // ✅ Uso correcto de función declarada abajo
+    int ok = sumar(3, 4);
+}
+
+// ✅ Función definida después del uso
+int doble(int x) {
+    return x * 2;
 }
