@@ -128,7 +128,7 @@ public class App {
             frame.add(scrollPane);
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setSize(800, 600);
-            // viewer.open(); // Puedes activar esta línea para mostrarlo automáticamente
+             viewer.open(); // Puedes activar esta línea para mostrarlo automáticamente
 
         } catch (Exception e) {
             System.err.println("❌ Error al mostrar árbol sintáctico: " + e.getMessage());
