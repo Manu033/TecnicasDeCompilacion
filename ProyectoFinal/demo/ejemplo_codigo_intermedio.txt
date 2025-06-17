@@ -1,0 +1,17 @@
+// Código de tres direcciones generado automáticamente
+// Archivo: ejemplo_codigo_intermedio.txt
+// Total de instrucciones: 13
+
+  0: func_noUsada:
+  1: t0 = x * 2
+  2: return t0
+  3: func_devolverNada:
+  4: func_sumar:
+  5: t1 = a + a
+  6: return t1
+  7: func_main:
+  8: x = 5
+  9: valor = null
+ 10: func_doble:
+ 11: t2 = x * 2
+ 12: return t2
