@@ -18,9 +18,9 @@ com\compilador\SimbolosListener.class
 com\compilador\GeneradorCodigo.class
 com\compilador\MiLenguajeVisitor.class
 com\compilador\MiLenguajeBaseListener.class
+com\compilador\MiLenguajeParser$ExpComparacionContext.class
 com\compilador\TablaSimbolos.class
 com\compilador\App$1.class
-com\compilador\MiLenguajeParser$OperadorBinarioContext.class
 com\compilador\MiLenguajeParser$TipoContext.class
 com\compilador\MiLenguajeParser$ExpCaracterContext.class
 com\compilador\MiLenguajeParser$SentenciaContinueContext.class
@@ -30,6 +30,7 @@ com\compilador\MiLenguajeParser$ExpVariableContext.class
 com\compilador\MiLenguajeParser$SentenciaContext.class
 com\compilador\MiLenguajeParser$SentenciaInteriorContext.class
 com\compilador\App.class
+com\compilador\MiLenguajeParser$ExpOrContext.class
 com\compilador\MiLenguajeListener.class
 com\compilador\MiLenguajeParser$SentenciaIfContext.class
 com\compilador\MiLenguajeParser$ExpresionContext.class
@@ -37,6 +38,7 @@ com\compilador\MiLenguajeParser$RetornoContext.class
 com\compilador\MiLenguajeParser$DeclaracionVariableContext.class
 com\compilador\MiLenguajeParser$ExpParentizadaContext.class
 com\compilador\MiLenguajeBaseVisitor.class
+com\compilador\MiLenguajeParser$ExpAndContext.class
 com\compilador\MiLenguajeParser$ExpDecimalContext.class
 com\compilador\MiLenguajeParser$ArgumentosContext.class
 com\compilador\CodigoVisitor.class
