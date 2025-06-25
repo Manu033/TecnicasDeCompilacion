@@ -11,11 +11,11 @@ git clone https://github.com/Manu033/TecnicasDeCompilacion.git
 
 ```
 cd TecnicasDeCompilacion/ProyectoFinal
--> tu-carpeta/sg-frontend
+-> tu-carpeta/TecnicasDeCompilacion/ProyectoFinal
 ```
 
 ### 3. Compilar el proyecto
-Con el siguiente proyecto compilas el proyecto JAVA
+Con el siguiente comando compilas el proyecto JAVA
 ```
 mvn clean package                                                                                  
 ```
