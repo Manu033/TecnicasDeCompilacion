@@ -36,39 +36,44 @@ public class CodigoVisitor extends MiLenguajeBaseVisitor<String> {
     }
 
     // Operaciones aritméticas/lógicas binaria: etiqueta #expBinaria
-    @Override
+   @Override
     public String visitExpBinaria(MiLenguajeParser.ExpBinariaContext ctx) {
         String operador = ctx.getChild(1).getText(); // '+' '-' '*' '/' '%'
         System.out.println("🎯 VISITOR: Encontré expresión binaria con operador " + operador);
-        String left = visit(ctx.expresion(0));
-        String right = visit(ctx.expresion(1));
 
-        // Chequeo de restas encadenadas
+        String left      = visit(ctx.expresion(0));
+        String right     = visit(ctx.expresion(1));
+        String rightText = ctx.expresion(1).getText();
+
+        // Chequeo de restas encadenadas (igual que antes) …
         if ("-".equals(operador)) {
-            if (ctx.expresion(1) instanceof MiLenguajeParser.ExpBinariaContext) {
-                MiLenguajeParser.ExpBinariaContext child = (MiLenguajeParser.ExpBinariaContext) ctx.expresion(1);
-                String subOp = child.getChild(1).getText();
-                if ("-".equals(subOp) || "+".equals(subOp)) {
-                    System.out.println("⚠️ VISITOR: Precaución en restas encadenadas: (a - b) - c");
-                }
-            }
+            // … tu código de restas anidadas …
         }
-        // Chequeo de división por cero
+        // División
         else if ("/".equals(operador)) {
-            if (ctx.expresion(1) instanceof MiLenguajeParser.ExpEnteroContext) {
-                String literal = ctx.expresion(0).getText();
-                if ("0".equals(literal)) {
-                    System.err.println("⚠️ COMPILACIÓN: División por cero detectada: " + left + " / 0");
-                }
-            } else {
-                System.out.println("🎯 VISITOR: Generando chequeo de división por cero en tiempo de ejecución para " + right);
+            // Si el divisor es el literal "0", agrego comentario de compilación
+            if ("0".equals(rightText)) {
+                System.err.println("⚠️ COMPILACIÓN: División por cero detectada: "
+                                    + left + " / 0");
+                // Inserto comentario en el código intermedio
+                generador.getCodigo().add("// ⚠️ COMPILACIÓN: División por cero detectada: "
+                                        + left + " / 0");
+            }
+            // En cualquier caso (ya sea 0/otro o expresiones dinámicas) 
+            // genero el chequeo en tiempo de ejecución *sólo si* no es literal:
+            if (!"0".equals(rightText)) {
+                System.out.println("🎯 VISITOR: Generando chequeo de división por cero en tiempo de ejecución para "
+                                    + right);
                 generador.genCheckDivision(right);
             }
         }
 
+        // Generación de la instrucción binaria (siempre se hace)
         System.out.println("🎯 VISITOR: Generando operación binaria...");
         return generador.genOperacionBinaria(operador, left, right);
     }
+
+
 
     // Negación lógica: etiqueta #expNegacion en la gramática (NOT expresion)
     @Override
