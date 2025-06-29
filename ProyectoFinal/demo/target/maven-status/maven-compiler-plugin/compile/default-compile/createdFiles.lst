@@ -1,5 +1,6 @@
 com\compilador\MiLenguajeParser$ExpFuncionContext.class
 com\compilador\MiLenguajeParser$SentenciaWhileContext.class
+com\compilador\Optimizador.class
 com\compilador\App$2.class
 com\compilador\MiLenguajeParser$ExpEnteroContext.class
 com\compilador\MiLenguajeParser$SentenciaForContext.class

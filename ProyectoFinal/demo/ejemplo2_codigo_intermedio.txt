@@ -1,6 +1,6 @@
 // Código de tres direcciones generado automáticamente
 // Archivo: ejemplo2_codigo_intermedio.txt
-// Total de instrucciones: 20
+// Total de instrucciones: 15
 
   0: t0 = 5
   1: a = t0
@@ -13,12 +13,7 @@
   8: res1 = t4
   9: t5 = 0
  10: d = t5
- 11: t6 = res1 == 0
- 12: if t6 goto L1
- 13: goto L0
- 14: L1:
- 15: // ERROR: División por cero en tiempo de ejecución
- 16: throw new RuntimeException("Error: División por cero");
- 17: L0:
- 18: t7 = d / res1
- 19: div = t7
+ 11: t6 = 0
+ 12: // ⚠️ COMPILACIÓN: División por cero detectada: res1 / 0
+ 13: t7 = res1 / t6
+ 14: div = t7

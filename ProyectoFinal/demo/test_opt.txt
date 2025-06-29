@@ -1,0 +1,21 @@
+void main() {
+    int x;
+    int y;
+    int z;
+    int resultado;
+    
+    x = 10;
+    y = 20;
+    z = x + y;
+
+    int a = 5;
+    a = a;
+
+    int b = 2 * 3;
+    int c = b + 0;
+
+    int d = 100;
+    d = d + 1; // <- código muerto
+
+    resultado = z + c;
+}

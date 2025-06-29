@@ -7,9 +7,9 @@ void main() {
     
     a = 5;
     b = 3;
-    c = 3;
+    int c = 3;
     int res1 = a - b - c;
     int d = 0;
-    int div =  d / res1;
-
+    int div =  res1 / 0;
+    
 }

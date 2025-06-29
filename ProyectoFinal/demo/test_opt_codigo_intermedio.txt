@@ -1,0 +1,27 @@
+// Código de tres direcciones generado automáticamente
+// Archivo: test_opt_codigo_intermedio.txt
+// Total de instrucciones: 23
+
+  0: t0 = 10
+  1: x = t0
+  2: t1 = 20
+  3: y = t1
+  4: t2 = x + y
+  5: z = t2
+  6: t3 = 5
+  7: a = t3
+  8: a = a
+  9: t4 = 2
+ 10: t5 = 3
+ 11: t6 = t4 * t5
+ 12: b = t6
+ 13: t7 = 0
+ 14: t8 = b + t7
+ 15: c = t8
+ 16: t9 = 100
+ 17: d = t9
+ 18: t10 = 1
+ 19: t11 = d + t10
+ 20: d = t11
+ 21: t12 = z + c
+ 22: resultado = t12

@@ -17,22 +17,25 @@ import java.util.*;
 
 public class App {
     public static void main(String[] args) {
+
+        String RESET = "\u001B[0m";
+        String RED = "\u001B[31m";
+        String GREEN = "\u001B[32m";
+        String YELLOW = "\u001B[33m";
+
         if (args.length != 1) {
             System.out.println("Uso: java -jar compilador.jar <archivo.txt>");
             System.exit(1);
         }
 
         try {
-
-            // Obtener el nombre del archivo de entrada para generar nombres de salida
             String inputFilePath = args[0];
             String inputFileName = new File(inputFilePath).getName();
             String baseName = inputFileName.substring(0, inputFileName.lastIndexOf('.'));
 
-            // Verificar que el archivo existe
             File inputFile = new File(inputFilePath);
             if (!inputFile.exists()) {
-                System.err.println("❌ Error: El archivo '" + inputFilePath + "' no existe.");
+                System.err.println(RED + "❌ Error: El archivo '" + inputFilePath + "' no existe." + RESET);
                 System.exit(1);
             }
 
@@ -47,7 +50,7 @@ public class App {
                 @Override
                 public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol,
                         int line, int charPositionInLine, String msg, RecognitionException e) {
-                    erroresLexicos.add("ERROR LÉXICO en línea " + line + ":" + charPositionInLine + " - " + msg);
+                    erroresLexicos.add(RED + "❌ ERROR LÉXICO en línea " + line + ":" + charPositionInLine + " - " + msg + RESET);
                     throw new ParseCancellationException(msg);
                 }
             });
@@ -66,7 +69,7 @@ public class App {
                                 tokenName, token.getText(), token.getLine(), token.getCharPositionInLine());
                     }
                 }
-                System.out.println("\n✅ Análisis léxico completado sin errores.");
+                System.out.println(GREEN + "\n✅ Análisis léxico completado sin errores." + RESET);
             } else {
                 erroresLexicos.forEach(System.out::println);
                 return;
@@ -80,8 +83,7 @@ public class App {
                 @Override
                 public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol,
                         int line, int charPositionInLine, String msg, RecognitionException e) {
-                    erroresSintacticos
-                            .add("ERROR SINTÁCTICO en línea " + line + ":" + charPositionInLine + " - " + msg);
+                    erroresSintacticos.add(RED + "❌ ERROR SINTÁCTICO en línea " + line + ":" + charPositionInLine + " - " + msg + RESET);
                 }
             });
 
@@ -91,7 +93,7 @@ public class App {
                 erroresSintacticos.forEach(System.out::println);
                 return;
             } else {
-                System.out.println("✅ Análisis sintáctico completado sin errores.");
+                System.out.println(GREEN + "✅ Análisis sintáctico completado sin errores." + RESET);
                 System.out.println("Representación textual del árbol sintáctico:");
                 System.out.println(tree.toStringTree(parser));
             }
@@ -109,52 +111,56 @@ public class App {
 
             List<String> erroresSemanticos = listener.getErrores();
             if (!erroresSemanticos.isEmpty()) {
-                System.out.println("\n=== ERRORES SEMÁNTICOS ===");
-                erroresSemanticos.forEach(System.out::println);
+                System.out.println("\n" + RED + "=== ERRORES SEMÁNTICOS ===" + RESET);
+                erroresSemanticos.forEach(e -> System.out.println(RED + "❌ " + e + RESET));
             } else {
-                System.out.println("\n✅ Análisis semántico completado sin errores.");
+                System.out.println(GREEN + "\n✅ Análisis semántico completado sin errores." + RESET);
             }
 
             List<String> advertencias = listener.obtenerAdvertenciasNoCriticas();
             if (!advertencias.isEmpty()) {
-                System.out.println("\n=== ADVERTENCIAS ===");
-                advertencias.forEach(System.out::println);
+                System.out.println("\n" + YELLOW + "=== ADVERTENCIAS ===" + RESET);
+                advertencias.forEach(w -> System.out.println(YELLOW + "⚠️ " + w + RESET));
             }
 
-            // 5. GENERACIÓN DE CÓDIGO INTERMEDIO
-            System.out.println("\n=== 5. GENERACIÓN DE CÓDIGO INTERMEDIO ===" + "\n");
+            // === GENERACIÓN DE CÓDIGO INTERMEDIO ===
+            System.out.println("\n=== 5. GENERACIÓN DE CÓDIGO INTERMEDIO ===\n");
             System.out.println("   🎯 Iniciando recorrido del AST con CodigoVisitor...");
 
-            // Crear el visitor con la tabla de símbolos
             CodigoVisitor visitor = new CodigoVisitor(tabla);
-
-            // ¡AQUÍ! - Recorrer el AST para generar código intermedio
             visitor.visit(tree);
 
-            // Obtener el generador con el código generado
             GeneradorCodigo generador = visitor.getGenerador();
 
-            // Mostrar el código generado en consola
             System.out.println("   📝 Código de tres direcciones generado:");
             generador.imprimirCodigo();
 
-            // Mostrar información adicional
             if (generador.getTiposVariables() != null) {
                 generador.imprimirTipos();
             }
             generador.imprimirEstadisticas();
 
-            // Guardar código intermedio en archivo
             String codigoIntermedioPath = baseName + "_codigo_intermedio.txt";
             guardarCodigoEnArchivo(generador.getCodigo(), codigoIntermedioPath);
-            System.out.println("✅ Código intermedio guardado en: " + codigoIntermedioPath);
+            System.out.println(GREEN + "✅ Código intermedio guardado en: " + codigoIntermedioPath + RESET);
+
+            // === 6. OPTIMIZACIÓN DE CÓDIGO ===
+            Optimizador optimizador = new Optimizador(generador.getCodigo());
+            List<String> codigoOptimizado = optimizador.optimizar();
+
+            String codigoOptimizadoPath = baseName + "_codigo_optimizado.txt";
+            guardarCodigoEnArchivo(codigoOptimizado, codigoOptimizadoPath);
+            System.out.println(GREEN + "✅ Código optimizado guardado en: " + codigoOptimizadoPath + RESET);
+
+            // (Opcional) Imprimir en consola el código optimizado
+            optimizador.imprimirCodigoOptimizado();
 
         } catch (IOException e) {
-            System.err.println("❌ Error al leer el archivo: " + e.getMessage());
+            System.err.println(RED + "❌ Error al leer el archivo: " + e.getMessage() + RESET);
         } catch (ParseCancellationException e) {
-            System.err.println("❌ Error de análisis: " + e.getMessage());
+            System.err.println(RED + "❌ Error de análisis: " + e.getMessage() + RESET);
         } catch (Exception e) {
-            System.err.println("❌ Error inesperado:");
+            System.err.println(RED + "❌ Error inesperado:" + RESET);
             e.printStackTrace();
         }
 
@@ -166,7 +172,7 @@ public class App {
             JPanel panel = new JPanel();
 
             TreeViewer viewer = new TreeViewer(Arrays.asList(parser.getRuleNames()), tree);
-            viewer.setScale(1.5); // Zoom
+            viewer.setScale(1.5);
 
             panel.add(viewer);
 
@@ -177,18 +183,15 @@ public class App {
             frame.add(scrollPane);
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setSize(800, 600);
-            viewer.open(); // Puedes activar esta línea para mostrarlo automáticamente
+            viewer.open();
 
         } catch (Exception e) {
-            System.err.println("❌ Error al mostrar árbol sintáctico: " + e.getMessage());
+            System.err.println("\u001B[31m❌ Error al mostrar árbol sintáctico: " + e.getMessage() + "\u001B[0m");
         }
     }
 
-    /**
-     * Guarda una lista de líneas de código en un archivo de texto
-     */
     private static void guardarCodigoEnArchivo(List<String> codigo, String rutaArchivo) throws IOException {
-    Path filePath = Paths.get(rutaArchivo);
+        Path filePath = Paths.get(rutaArchivo);
         try (BufferedWriter writer = Files.newBufferedWriter(filePath)) {
             writer.write("// Código de tres direcciones generado automáticamente");
             writer.newLine();
@@ -205,5 +208,4 @@ public class App {
         }
         System.out.println("   💾 Archivo guardado con " + codigo.size() + " instrucciones");
     }
-
 }

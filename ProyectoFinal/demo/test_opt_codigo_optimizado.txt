@@ -1,0 +1,12 @@
+// Código de tres direcciones generado automáticamente
+// Archivo: test_opt_codigo_optimizado.txt
+// Total de instrucciones: 8
+
+  0: t2 = 30
+  1: z = t2
+  2: t6 = 6
+  3: b = t6
+  4: t8 = b
+  5: c = t8
+  6: t12 = z + c
+  7: resultado = t12
