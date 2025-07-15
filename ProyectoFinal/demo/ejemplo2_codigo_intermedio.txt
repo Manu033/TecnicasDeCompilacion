@@ -1,19 +1,17 @@
 // Código de tres direcciones generado automáticamente
 // Archivo: ejemplo2_codigo_intermedio.txt
-// Total de instrucciones: 15
+// Total de instrucciones: 13
 
-  0: t0 = 5.5
-  1: a = t0
+  0: t0 = 3
+  1: b = t0
   2: t1 = 3
-  3: b = t1
-  4: t2 = 3
-  5: c = t2
-  6: t3 = a - b
-  7: t4 = t3 - c
-  8: res1 = t4
+  3: c = t1
+  4: t2 = a - b
+  5: t3 = t2 - c
+  6: res1 = t3
+  7: t4 = 0
+  8: d = t4
   9: t5 = 0
- 10: d = t5
- 11: t6 = 0
- 12: // ⚠️ COMPILACIÓN: División por cero detectada: res1 / 0
- 13: t7 = res1 / t6
- 14: div = t7
+ 10: // ⚠️ COMPILACIÓN: División por cero detectada: res1 / 0
+ 11: t6 = res1 / t5
+ 12: div = t6

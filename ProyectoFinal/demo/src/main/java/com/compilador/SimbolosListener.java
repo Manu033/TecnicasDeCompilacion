@@ -29,26 +29,27 @@ public class SimbolosListener extends MiLenguajeBaseListener {
     public TablaSimbolos getTablaSimbolos() { return tablaSimbolos; }
     public List<String> getErrores() { return errores; }
     public List<String> getAdvertencias() {
-        advertencias.clear();
-        // Variables y parámetros no usados
-        for (TablaSimbolos.Simbolo s : tablaSimbolos.getSimbolos()) {
-            if ((s.getCategoria().equals("variable") || s.getCategoria().equals("parametro")) && !usados.contains(s)) {
-                advertencias.add("[No crítico] '" + s.getNombre() + "' declarado pero no usado");
-            }
-            if (s.getCategoria().equals("variable") && !inicializadas.contains(s.getNombre())) {
-                advertencias.add("[No crítico] Variable '" + s.getNombre() + "' no inicializada");
-            }
-            if (s.getCategoria().equals("funcion") && !s.getNombre().equals("main") && !usados.contains(s)) {
-                advertencias.add("[No crítico] Función '" + s.getNombre() + "' nunca llamada");
-            }
+    // Generar advertencias a partir de símbolos e imports
+    List<String> result = new ArrayList<>();
+    for (TablaSimbolos.Simbolo s : tablaSimbolos.getSimbolos()) {
+        if ((s.getCategoria().equals("variable") || s.getCategoria().equals("parametro")) && !usados.contains(s)) {
+            result.add("[No crítico] '" + s.getNombre() + "' declarado pero no usado");
         }
-        // Imports no usados
-        for (String imp : imports) {
-            if (!codeReferencesImport(imp)) {
-                advertencias.add("[No crítico] Import '" + imp + "' no usado");
-            }
+        if (s.getCategoria().equals("variable") && !inicializadas.contains(s.getNombre())) {
+            result.add("[No crítico] Variable '" + s.getNombre() + "' no inicializada");
         }
-        return advertencias;
+        if (s.getCategoria().equals("funcion") && !s.getNombre().equals("main") && !usados.contains(s)) {
+            result.add("[No crítico] Función '" + s.getNombre() + "' nunca llamada");
+        }
+    }
+    for (String imp : imports) {
+        if (!codeReferencesImport(imp)) {
+            result.add("[No crítico] Import '" + imp + "' no usado");
+        }
+    }
+    // Añadir advertencias previas (bucle infinito, división por cero, no inicializadas detectadas durante el parseo)
+    result.addAll(advertencias);
+    return result;
     }
 
     private boolean codeReferencesImport(String imp) {
@@ -183,10 +184,16 @@ public class SimbolosListener extends MiLenguajeBaseListener {
         }
     }
 
+    
     @Override
     public void enterExpVariable(MiLenguajeParser.ExpVariableContext ctx) {
         String nombre = ctx.ID().getText();
         int linea = ctx.ID().getSymbol().getLine();
+
+            // ** Ignorar literales booleanos para no tratarlos como variables **
+    if ("true".equals(nombre) || "false".equals(nombre)) {
+        return;
+    }
         TablaSimbolos.Simbolo s = tablaSimbolos.buscar(nombre);
         if (s == null) {
             errores.add("❌ [Crítico] Identificador '" + nombre + "' no declarado (línea " + linea + ")");
