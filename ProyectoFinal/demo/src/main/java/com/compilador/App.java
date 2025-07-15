@@ -117,7 +117,7 @@ public class App {
                 System.out.println(GREEN + "\n✅ Análisis semántico completado sin errores." + RESET);
             }
 
-            List<String> advertencias = listener.obtenerAdvertenciasNoCriticas();
+            List<String> advertencias = listener.getAdvertencias();
             if (!advertencias.isEmpty()) {
                 System.out.println("\n" + YELLOW + "=== ADVERTENCIAS ===" + RESET);
                 advertencias.forEach(w -> System.out.println(YELLOW + "⚠️ " + w + RESET));

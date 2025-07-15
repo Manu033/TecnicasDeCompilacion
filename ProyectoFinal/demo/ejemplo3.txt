@@ -1,0 +1,54 @@
+// -------------------------
+// FUNCIONES
+// -------------------------
+void helper(int p1, int p2) { 
+
+    // p2 nunca usado → [No crítico] Parámetro no utilizado
+}                       
+
+int duplicateFunc() {    // primera declaración
+    return 0;
+}
+int duplicateFunc() { // ❌ [Crítico] Función redeclarada con distinto tipo
+    return 0.0;
+}
+
+
+
+int retMismatch() {      // retorna String en función int → ❌ [Crítico]
+    return "oops";
+}
+
+// Llamada antes de main, función declarada después → ❌ [Crítico]
+void main(int nousado) {
+                                   // Llamada a función antes de su declaración
+
+    // -------------------------
+    // VARIABLES
+    // -------------------------
+
+
+    int a;                               // declarado pero nunca usado → [No crítico]
+    int b;                               // sin inicializar
+    int c = 3;                           // inicializada correctamente
+    double c = 5;                           // ❌ [Crítico] Variable redeclarada en mismo ámbito
+    a = 3.14;                            // ❌ [Crítico] Asignación incompatible (int = double)
+    b = x;                               // ❌ [Crítico] Asignación a variable no definida
+
+    int res1 = a - b - c;                // usa a,b,c
+    int res2 = helper(1);               // ❌ [Crítico] Parámetros incorrectos (espera 2, recibe 1)
+    int res3 = undefinedFunc();         // ❌ [Crítico] Llamada a función no definida
+
+    int div0 = res1 / 0;                // ❌ [Crítico] División por cero (puede considerarse semántico)
+    
+    while (true) { }                     // [No crítico] Bucle potencialmente infinito
+
+    return "fin";                       // ❌ [Crítico] return String en función void
+}
+
+// Declaración de foo() después de main
+void foo() { }                           // nunca usada → [No crítico] Función nunca llamada
+
+// Función que no existe
+// int undefinedFunc() { return 42; }
+

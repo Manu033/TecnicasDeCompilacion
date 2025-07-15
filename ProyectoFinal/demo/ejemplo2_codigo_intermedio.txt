@@ -2,7 +2,7 @@
 // Archivo: ejemplo2_codigo_intermedio.txt
 // Total de instrucciones: 15
 
-  0: t0 = 5
+  0: t0 = 5.5
   1: a = t0
   2: t1 = 3
   3: b = t1
