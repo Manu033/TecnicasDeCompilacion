@@ -1,8 +1,5 @@
 // Código de tres direcciones generado automáticamente
 // Archivo: ejemplo2_codigo_optimizado.txt
-// Total de instrucciones: 4
+// Total de instrucciones: 1
 
-  0: t2 = a - 3
-  1: t3 = t2 - 3
-  2: res1 = t3
-  3: // ⚠️ COMPILACIÓN: División por cero detectada: res1 / 0
+  0: // ⚠️ COMPILACIÓN: División por cero detectada: null / 0

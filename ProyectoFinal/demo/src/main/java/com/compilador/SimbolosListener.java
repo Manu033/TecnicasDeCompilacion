@@ -1,3 +1,4 @@
+// Generated: SimbolosListener.java
 package com.compilador;
 
 import org.antlr.v4.runtime.tree.ErrorNode;
@@ -29,27 +30,25 @@ public class SimbolosListener extends MiLenguajeBaseListener {
     public TablaSimbolos getTablaSimbolos() { return tablaSimbolos; }
     public List<String> getErrores() { return errores; }
     public List<String> getAdvertencias() {
-    // Generar advertencias a partir de símbolos e imports
-    List<String> result = new ArrayList<>();
-    for (TablaSimbolos.Simbolo s : tablaSimbolos.getSimbolos()) {
-        if ((s.getCategoria().equals("variable") || s.getCategoria().equals("parametro")) && !usados.contains(s)) {
-            result.add("[No crítico] '" + s.getNombre() + "' declarado pero no usado");
+        List<String> result = new ArrayList<>();
+        for (TablaSimbolos.Simbolo s : tablaSimbolos.getSimbolos()) {
+            if ((s.getCategoria().equals("variable") || s.getCategoria().equals("parametro")) && !usados.contains(s)) {
+                result.add("[No crítico] '" + s.getNombre() + "' declarado pero no usado");
+            }
+            if (s.getCategoria().equals("variable") && !inicializadas.contains(s.getNombre())) {
+                result.add("[No crítico] Variable '" + s.getNombre() + "' no inicializada");
+            }
+            if (s.getCategoria().equals("funcion") && !s.getNombre().equals("main") && !usados.contains(s)) {
+                result.add("[No crítico] Función '" + s.getNombre() + "' nunca llamada");
+            }
         }
-        if (s.getCategoria().equals("variable") && !inicializadas.contains(s.getNombre())) {
-            result.add("[No crítico] Variable '" + s.getNombre() + "' no inicializada");
+        for (String imp : imports) {
+            if (!codeReferencesImport(imp)) {
+                result.add("[No crítico] Import '" + imp + "' no usado");
+            }
         }
-        if (s.getCategoria().equals("funcion") && !s.getNombre().equals("main") && !usados.contains(s)) {
-            result.add("[No crítico] Función '" + s.getNombre() + "' nunca llamada");
-        }
-    }
-    for (String imp : imports) {
-        if (!codeReferencesImport(imp)) {
-            result.add("[No crítico] Import '" + imp + "' no usado");
-        }
-    }
-    // Añadir advertencias previas (bucle infinito, división por cero, no inicializadas detectadas durante el parseo)
-    result.addAll(advertencias);
-    return result;
+        result.addAll(advertencias);
+        return result;
     }
 
     private boolean codeReferencesImport(String imp) {
@@ -74,6 +73,13 @@ public class SimbolosListener extends MiLenguajeBaseListener {
             String nombre = ((MiLenguajeParser.ExpFuncionContext) ctx).ID().getText();
             TablaSimbolos.Simbolo s = tablaSimbolos.buscar(nombre);
             return s != null ? s.getTipo() : "desconocido";
+        } else if (ctx instanceof MiLenguajeParser.ExpAccesoArregloContext) {
+            // Para arrays, devolvemos el tipo base (sin [])
+            String nombre = ((MiLenguajeParser.ExpAccesoArregloContext) ctx).ID().getText();
+            TablaSimbolos.Simbolo s = tablaSimbolos.buscar(nombre);
+            if (s != null) {
+                return s.getTipo().replace("[]", "");
+            }
         }
         return "desconocido";
     }
@@ -110,7 +116,6 @@ public class SimbolosListener extends MiLenguajeBaseListener {
                 if (!tablaSimbolos.agregar(param)) {
                     errores.add("❌ [Crítico] Parámetro duplicado '" + nm + "' (línea " + p.ID().getSymbol().getLine() + ")");
                 }
-                // usados.add(param);
                 inicializadas.add(nm);
                 funcion.addParametro(tp);
             }
@@ -121,35 +126,51 @@ public class SimbolosListener extends MiLenguajeBaseListener {
 
     @Override
     public void exitDeclaracionFuncion(MiLenguajeParser.DeclaracionFuncionContext ctx) {
-        // tablaSimbolos.setAmbito("global");
-        // tipoRetornoActual = null;
-            String funcName = ctx.ID().getText();
-    // Revisa cada parámetro de esta función
-    for (TablaSimbolos.Simbolo s : tablaSimbolos.getSimbolos()) {
-        if (s.getCategoria().equals("parametro")
-            && s.getAmbito().equals(funcName)
-            && !usados.contains(s)) {
-            advertencias.add(
-                "[No crítico] Parámetro '" + s.getNombre() +
-                "' nunca usado en función '" + funcName +
-                "' (declarado línea " + s.getLinea() + ")"
-            );
+        String funcName = ctx.ID().getText();
+        for (TablaSimbolos.Simbolo s : tablaSimbolos.getSimbolos()) {
+            if (s.getCategoria().equals("parametro")
+                && s.getAmbito().equals(funcName)
+                && !usados.contains(s)) {
+                advertencias.add(
+                    "[No crítico] Parámetro '" + s.getNombre() + "' nunca usado en función '" + funcName + "' (declarado línea " + s.getLinea() + ")"
+                );
+            }
         }
-    }
-    tablaSimbolos.setAmbito("global");
-    tipoRetornoActual = null;
+        tablaSimbolos.setAmbito("global");
+        tipoRetornoActual = null;
     }
 
     @Override
     public void enterDeclaracionVariable(MiLenguajeParser.DeclaracionVariableContext ctx) {
-        String nombre = ctx.ID().getText();
-        String tipo = ctx.tipo().getText();
-        int linea = ctx.ID().getSymbol().getLine();
+        String nombre   = ctx.ID().getText();
+        String tipoBase = ctx.tipo().getText();
+        int linea       = ctx.ID().getSymbol().getLine();
+        String ambito   = tablaSimbolos.getAmbito();
+
+        // Detectar si es arreglo
+        boolean esArreglo = ctx.CA() != null;
+        String tipo;
+        int dimension = -1;
+        if (esArreglo) {
+            tipo = tipoBase + "[]";
+            // Obtener dimensión literal
+            String dimText = ctx.expresion(0).getText();
+            try {
+                dimension = Integer.parseInt(dimText);
+            } catch (NumberFormatException e) {
+                // dejo como -1 si no es literal
+            }
+        } else {
+            tipo = tipoBase;
+        }
+
         TablaSimbolos.Simbolo simbolo = new TablaSimbolos.Simbolo(
             nombre, tipo, "variable", linea,
-            ctx.ID().getSymbol().getCharPositionInLine(),
-            tablaSimbolos.getAmbito()
+            ctx.ID().getSymbol().getCharPositionInLine(), ambito
         );
+        if (esArreglo) {
+            simbolo.setDimension(dimension);
+        }
         if (!tablaSimbolos.agregar(simbolo)) {
             TablaSimbolos.Simbolo prev = tablaSimbolos.buscar(nombre);
             if (!prev.getTipo().equals(tipo)) {
@@ -158,14 +179,18 @@ public class SimbolosListener extends MiLenguajeBaseListener {
                 errores.add("❌ [Crítico] Variable '" + nombre + "' ya declarada (línea " + linea + ")");
             }
         }
-        if (ctx.getChildCount() > 2 && "=".equals(ctx.getChild(2).getText())) {
+
+        // Marcar inicializada si hay '= expr'
+        if (ctx.IGUAL() != null) {
             inicializadas.add(nombre);
         }
     }
 
     @Override
     public void enterAsignacion(MiLenguajeParser.AsignacionContext ctx) {
-        String nombre = ctx.ID().getText();
+        // Código de asignación simple y a arreglos manejado en visitor
+                String nombre = ctx.ID().getText();
+        // Código de asignación simple y a arreglos manejado en visitor
         int linea = ctx.ID().getSymbol().getLine();
         TablaSimbolos.Simbolo s = tablaSimbolos.buscar(nombre);
         if (s == null) {
@@ -176,37 +201,32 @@ public class SimbolosListener extends MiLenguajeBaseListener {
             }
             usados.add(s);
             inicializadas.add(nombre);
-            String tipoVar = s.getTipo();
-            String tipoExpr = determinarTipoExpresion(ctx.expresion());
-            if (!tipoExpr.equals("desconocido") && !tipoVar.equals(tipoExpr)) {
-                errores.add("❌ [Crítico] Asignación incompatible: '" + nombre + "' (" + tipoVar + ") = (" + tipoExpr + ") (línea " + linea + ")");
-            }
+            // String tipoVar = s.getTipo();
+            // String tipoExpr = determinarTipoExpresion(ctx.expresion());
+            // if (!tipoExpr.equals("desconocido") && !tipoVar.equals(tipoExpr)) {
+            //     errores.add("❌ [Crítico] Asignación incompatible: '" + nombre + "' (" + tipoVar + ") = (" + tipoExpr + ") (línea " + linea + ")");
+            // }
         }
     }
 
-    
     @Override
     public void enterExpVariable(MiLenguajeParser.ExpVariableContext ctx) {
         String nombre = ctx.ID().getText();
         int linea = ctx.ID().getSymbol().getLine();
-
-            // ** Ignorar literales booleanos para no tratarlos como variables **
-    if ("true".equals(nombre) || "false".equals(nombre)) {
-        return;
-    }
+        if ("true".equals(nombre) || "false".equals(nombre)) return;
         TablaSimbolos.Simbolo s = tablaSimbolos.buscar(nombre);
         if (s == null) {
             errores.add("❌ [Crítico] Identificador '" + nombre + "' no declarado (línea " + linea + ")");
         } else {
-        // ** NUEVO: detectar variable no inicializada **
-        if (!inicializadas.contains(nombre)) {
-            advertencias.add("[No crítico] Variable '" + nombre + "' no inicializada (línea " + linea + ")");
+            if (!inicializadas.contains(nombre)) {
+                advertencias.add("[No crítico] Variable '" + nombre + "' no inicializada (línea " + linea + ")");
+            }
+            usados.add(s);
         }
-        usados.add(s);
-    }
     }
 
-    @Override
+
+       @Override
     public void enterExpFuncion(MiLenguajeParser.ExpFuncionContext ctx) {
         String nombre = ctx.ID().getText();
         int linea = ctx.ID().getSymbol().getLine();
@@ -217,6 +237,7 @@ public class SimbolosListener extends MiLenguajeBaseListener {
             if (!f.getCategoria().equals("funcion")) {
                 errores.add("❌ [Crítico] '" + nombre + "' no es función (línea " + linea + ")");
                 return;
+            }
             }
             if (mainLinea > 0 && linea < mainLinea && f.getLinea() > mainLinea) {
                 errores.add("❌ [Crítico] Llamada a función '" + nombre + "' antes de main (línea " + linea + ")");
@@ -231,9 +252,9 @@ public class SimbolosListener extends MiLenguajeBaseListener {
                    " (línea " + linea + ")");
     }
             usados.add(f);
-        }
     }
 
+    	
     @Override
     public void enterRetorno(MiLenguajeParser.RetornoContext ctx) {
         int linea = ctx.getStart().getLine();
@@ -252,19 +273,14 @@ public class SimbolosListener extends MiLenguajeBaseListener {
             }
         }
     }
-
     @Override
     public void enterSentenciaWhile(MiLenguajeParser.SentenciaWhileContext ctx) {
         String cond = ctx.expresion().getText();
         if (cond.equals("true") || cond.equals("1")) {
-            advertencias.add("[No crítico] Bucle potencialmente infinito (línea " + ctx.getStart().getLine() + ")");
-        }
-    }
+            advertencias.add("[No crítico] Bucle potencialmente infinito (línea " + ctx.getStart().getLine() + ")");}}
 
     @Override
     public void visitErrorNode(ErrorNode node) {
         errores.add("Error sintáctico en token: " + node.getText());
     }
-
-    
 }

@@ -1,26 +1,16 @@
 // Código de tres direcciones generado automáticamente
 // Archivo: ejemplo_correcto_codigo_optimizado.txt
-// Total de instrucciones: 22
+// Total de instrucciones: 12
 
-  0: t0 = a + b
-  1: resultado = t0
-  2: t7 = temp * 2
-  3: temp = t7
-  4: t9 = 3 == 0
-  5: if t9 goto L1
-  6: goto L0
-  7: L1:
-  8: // ERROR: División por cero en tiempo de ejecución
-  9: throw new RuntimeException("Error: División por cero");
+  0: func_sumar:
+  1: t0 = a + b
+  2: resultado = t0
+  3: return resultado
+  4: func_main:
+  5: estado = null
+  6: if !0 goto L0
+  7: t6 = estado + 10
+  8: auxiliar = t6
+  9: estado = auxiliar
  10: L0:
- 11: t10 = temp / 3
- 12: temp = t10
- 13: t12 = temp % 5
- 14: temp = t12
- 15: param temp
- 16: param 5
- 17: t14 = call sumar, 2
- 18: estado = t14
- 19: t17 = estado > 0
- 20: if !t17 goto L2
- 21: L2:
+ 11: return estado

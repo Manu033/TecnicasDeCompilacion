@@ -5,7 +5,7 @@
 int contadorGlobal;
 double valorPi;
 char inicial;
-//bool activo;
+bool activo;
 
 // Función simple que retorna valor
 int sumar(int a, int b) {
@@ -19,7 +19,7 @@ int sumar(int a, int b) {
 int main() {
     int estado;
     int temp;
-    //int numeros[3];
+    int numeros[3];
     
     // Inicializar variables globales
     contadorGlobal = 0;
@@ -27,12 +27,12 @@ int main() {
     inicial = 'M';
     
     // Usar arrays
-    //numeros[0] = 10;
-    //numeros[1] = 20;
-    //numeros[2] = 30;
+    numeros[0] = 10;
+    numeros[1] = 20;
+    numeros[2] = 30;
     
     // Operaciones básicas
-    //temp = numeros[0] + numeros[1];
+    temp = numeros[0] + numeros[1];
     temp = temp * 2;
     temp = temp / 3;
     temp = temp % 5;

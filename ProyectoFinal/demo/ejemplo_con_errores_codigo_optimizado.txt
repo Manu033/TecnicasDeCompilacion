@@ -1,0 +1,11 @@
+// Código de tres direcciones generado automáticamente
+// Archivo: ejemplo_con_errores_codigo_optimizado.txt
+// Total de instrucciones: 7
+
+  0: func_miFuncion:
+  1: t0 = 105
+  2: variableLocal = t0
+  3: return variableLocal
+  4: func_main:
+  5: resultado = null
+  6: return resultado

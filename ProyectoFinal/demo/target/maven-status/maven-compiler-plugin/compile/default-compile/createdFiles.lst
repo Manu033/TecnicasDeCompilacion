@@ -42,5 +42,6 @@ com\compilador\MiLenguajeBaseVisitor.class
 com\compilador\MiLenguajeParser$ExpAndContext.class
 com\compilador\MiLenguajeParser$ExpDecimalContext.class
 com\compilador\MiLenguajeParser$ArgumentosContext.class
+com\compilador\MiLenguajeParser$ExpAccesoArregloContext.class
 com\compilador\CodigoVisitor.class
 com\compilador\MiLenguajeParser$ParametroContext.class

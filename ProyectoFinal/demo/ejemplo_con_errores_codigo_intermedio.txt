@@ -1,0 +1,25 @@
+// Código de tres direcciones generado automáticamente
+// Archivo: ejemplo_con_errores_codigo_intermedio.txt
+// Total de instrucciones: 21
+
+  0: func_miFuncion:
+  1: parametro1 = 100
+  2: t0 = parametro1 + 5
+  3: variableLocal = t0
+  4: variableFantasma = 42
+  5: miFuncion = 10
+  6: valorGlobal = null
+  7: return variableLocal
+  8: func_funcionVoid:
+  9: x = 10
+ 10: t1 = x + 5
+ 11: y = t1
+ 12: t2 = x + y
+ 13: w = t2
+ 14: func_main:
+ 15: resultado = null
+ 16: t3 = resultado + 10
+ 17: valor = t3
+ 18: variableFinal = valor
+ 19: variableGlobal = valor
+ 20: return resultado

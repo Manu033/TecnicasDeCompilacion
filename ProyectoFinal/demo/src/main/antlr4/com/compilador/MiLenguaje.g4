@@ -63,13 +63,14 @@ parametro
 
 // Declaración de variable con asignación opcional
 declaracionVariable
-    : tipo ID (IGUAL expresion)? PYC
+    : tipo ID (CA expresion CC)? (IGUAL expresion)? PYC
     ;
 
 asignacion
     : ID IGUAL expresion PYC      // Asignación simple: x = expr;
     | ID SUM SUM PYC              // Incremento: x++;
     | ID RES RES PYC              // Decremento: x--;
+    | ID CA expresion CC IGUAL expresion PYC
     ;
 
 retorno
@@ -82,6 +83,7 @@ tipo
     | DOUBLE
     | VOID
     | STRING
+    | BOOL
     ;
 
 // -----------------------
@@ -101,6 +103,7 @@ expresion
     | NOT expresion                           #expNegacion
     | PA expresion PC                         #expParentizada
     | ID PA argumentos? PC                    #expFuncion
+    | ID CA expresion CC                      #expAccesoArreglo
     | ID                                      #expVariable
     | INTEGER                                 #expEntero
     | DECIMAL                                 #expDecimal
@@ -135,6 +138,7 @@ ELSE      : 'else' ;
 INT       : 'int' ;
 CHAR      : 'char' ;
 DOUBLE    : 'double' ;
+BOOL      : 'bool' ;
 VOID      : 'void' ;
 STRING    : 'String' ;
 RETURN    : 'return' ;

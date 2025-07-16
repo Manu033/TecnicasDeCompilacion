@@ -11,9 +11,9 @@
   6: c = t4
   7: t5 = 3.14
   8: a = t5
-  9: b = x
- 10: t6 = a - b
- 11: t7 = t6 - c
+  9: b = null
+ 10: t6 = null - null
+ 11: t7 = t6 - null
  12: res1 = t7
  13: t8 = 1
  14: param t8
@@ -22,7 +22,7 @@
  17: t10 = call undefinedFunc, 0
  18: res3 = t10
  19: t11 = 0
- 20: // ⚠️ COMPILACIÓN: División por cero detectada: res1 / 0
- 21: t12 = res1 / t11
+ 20: // ⚠️ COMPILACIÓN: División por cero detectada: null / 0
+ 21: t12 = null / t11
  22: div0 = t12
  23: t13 = "fin"

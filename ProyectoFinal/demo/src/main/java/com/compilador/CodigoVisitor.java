@@ -1,233 +1,180 @@
 package com.compilador;
 
+import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 import java.util.ArrayList;
 import java.util.List;
-
 public class CodigoVisitor extends MiLenguajeBaseVisitor<String> {
+    
     private GeneradorCodigo generador;
     private TablaSimbolos tabla;
-
+    
     public CodigoVisitor(TablaSimbolos tabla) {
         this.generador = new GeneradorCodigo();
         this.tabla = tabla;
         System.out.println("🎯 VISITOR: Iniciado con tabla de símbolos");
     }
-
+    
+    /**
+     * Obtiene el generador de código
+     */
     public GeneradorCodigo getGenerador() {
         return generador;
     }
-
-    // Comparación: etiqueta en la gramática: #expComparacion
+    
     @Override
-    public String visitExpComparacion(MiLenguajeParser.ExpComparacionContext ctx) {
-        // Gramática: expresion comparadorBinario expresion
-        if (ctx.comparadorBinario() != null) {
-            String operador = ctx.comparadorBinario().getText();
-            System.out.println("🎯 VISITOR: Encontré comparación -> operador " + operador);
-            String left = visit(ctx.expresion(0));
-            String right = visit(ctx.expresion(1));
-            return generador.genOperacionBinaria(operador, left, right);
-        } else {
-            // Aunque la etiqueta #expComparacion sugiere que siempre habrá comparadorBinario,
-            // si en su gramática permite sin comparador, use solo el sub-nodo:
-            // Por seguridad, devolvemos la subexpresión completa:
-            return visit(ctx.expresion(0));
+    public String visitPrograma(MiLenguajeParser.ProgramaContext ctx) {
+        System.out.println("🎯 VISITOR: Iniciando recorrido del programa");
+        
+        for (MiLenguajeParser.SentenciaContext sentencia : ctx.sentencia()) {
+            System.out.println("🎯 VISITOR: Procesando una sentencia...");
+            visit(sentencia);
         }
+        
+        System.out.println("🎯 VISITOR: Programa completado");
+        return null;
     }
-
-    // Operaciones aritméticas/lógicas binaria: etiqueta #expBinaria
-   @Override
+    
+    @Override
+    public String visitDeclaracionFuncion(MiLenguajeParser.DeclaracionFuncionContext ctx) {
+        String nombreFuncion = ctx.ID().getText();
+        System.out.println("🎯 VISITOR: Encontré función -> " + nombreFuncion);
+        
+        // Generar etiqueta para la función
+        generador.genLabel("func_" + nombreFuncion);
+        
+        // Cambiar ámbito (simulado)
+        System.out.println("🎯 VISITOR: Cambiando al ámbito de " + nombreFuncion);
+        
+        // Procesar el bloque de código
+        System.out.println("🎯 VISITOR: Procesando cuerpo de la función...");
+        visit(ctx.bloque());
+        
+        System.out.println("🎯 VISITOR: Función " + nombreFuncion + " completada");
+        return null;
+    }
+    
+    @Override
+    public String visitBloque(MiLenguajeParser.BloqueContext ctx) {
+        System.out.println("🎯 VISITOR: Procesando bloque con " + ctx.sentenciaInterior().size() + " sentencias");
+        
+        for (MiLenguajeParser.SentenciaInteriorContext sentencia : ctx.sentenciaInterior()) {
+            visit(sentencia);
+        }
+        
+        return null;
+    }
+    
+    @Override
+    public String visitAsignacion(MiLenguajeParser.AsignacionContext ctx) {
+        String variable = ctx.ID().getText();
+        System.out.println("🎯 VISITOR: Encontré asignación -> " + variable + " = ...");
+        
+        // Procesar la expresión del lado derecho
+        System.out.println("🎯 VISITOR: Evaluando expresión del lado derecho...");
+        String resultado = visit(ctx.expresion().get(0));
+        
+        // Generar la asignación
+        System.out.println("🎯 VISITOR: Generando asignación final...");
+        generador.genAsignacion(variable, resultado);
+        
+        return null;
+    }
+    
+    @Override
+    public String visitSentenciaIf(MiLenguajeParser.SentenciaIfContext ctx) {
+        System.out.println("🎯 VISITOR: Encontré sentencia IF");
+        
+        // Evaluar la condición
+        System.out.println("🎯 VISITOR: Evaluando condición del IF...");
+        String condicion = visit(ctx.expresion());
+        
+        // Crear etiquetas
+        String labelElse = generador.newLabel();
+        String labelFin = generador.newLabel();
+        
+        // Generar salto condicional
+        System.out.println("🎯 VISITOR: Si condición es falsa, saltar a " + labelElse);
+        generador.genIfFalse(condicion, labelElse);
+        
+        // Procesar bloque IF
+        System.out.println("🎯 VISITOR: Procesando bloque IF...");
+        visit(ctx.bloque(0));
+        
+        // Si hay ELSE
+        if (ctx.ELSE() != null) {
+            System.out.println("🎯 VISITOR: Hay ELSE, saltando al final...");
+            generador.genGoto(labelFin);
+            generador.genLabel(labelElse);
+            
+            System.out.println("🎯 VISITOR: Procesando bloque ELSE...");
+            visit(ctx.bloque(1));
+            
+            generador.genLabel(labelFin);
+        } else {
+            generador.genLabel(labelElse);
+        }
+        
+        System.out.println("🎯 VISITOR: IF completado");
+        return null;
+    }
+    
+    @Override
     public String visitExpBinaria(MiLenguajeParser.ExpBinariaContext ctx) {
-        String operador = ctx.getChild(1).getText(); // '+' '-' '*' '/' '%'
+        String operador = ctx.getChild(1).getText();
         System.out.println("🎯 VISITOR: Encontré expresión binaria con operador " + operador);
-
-        String left      = visit(ctx.expresion(0));
-        String right     = visit(ctx.expresion(1));
-        String rightText = ctx.expresion(1).getText();
-
-        // Chequeo de restas encadenadas (igual que antes) …
-        if ("-".equals(operador)) {
-            // … tu código de restas anidadas …
-        }
-        // División
-        else if ("/".equals(operador)) {
-            // Si el divisor es el literal "0", agrego comentario de compilación
-            if ("0".equals(rightText)) {
-                System.err.println("⚠️ COMPILACIÓN: División por cero detectada: "
-                                    + left + " / 0");
-                // Inserto comentario en el código intermedio
-                generador.getCodigo().add("// ⚠️ COMPILACIÓN: División por cero detectada: "
-                                        + left + " / 0");
-            }
-            // En cualquier caso (ya sea 0/otro o expresiones dinámicas) 
-            // genero el chequeo en tiempo de ejecución *sólo si* no es literal:
-            if (!"0".equals(rightText)) {
-                System.out.println("🎯 VISITOR: Generando chequeo de división por cero en tiempo de ejecución para "
-                                    + right);
-                generador.genCheckDivision(right);
-            }
-        }
-
-        // Generación de la instrucción binaria (siempre se hace)
+        
+        // Evaluar operando izquierdo
+        System.out.println("🎯 VISITOR: Evaluando operando izquierdo...");
+        String left  = visit(ctx.expresion(0));
+        
+        // Evaluar operando derecho
+        System.out.println("🎯 VISITOR: Evaluando operando derecho...");
+        String right = visit(ctx.expresion(1));
+        
+        // Generar la operación
         System.out.println("🎯 VISITOR: Generando operación binaria...");
         return generador.genOperacionBinaria(operador, left, right);
     }
-
-
-
-    // Negación lógica: etiqueta #expNegacion en la gramática (NOT expresion)
-    @Override
-    public String visitExpNegacion(MiLenguajeParser.ExpNegacionContext ctx) {
-        System.out.println("🎯 VISITOR: Encontré negación lógica");
-        String operand = visit(ctx.expresion());
-        return generador.genNegacion(operand);
-    }
-
-    // Llamada a función: etiqueta #expFuncion
-    @Override
-    public String visitExpFuncion(MiLenguajeParser.ExpFuncionContext ctx) {
-        String nombre = ctx.ID().getText();
-        System.out.println("🎯 VISITOR: Llamada a función -> " + nombre);
-        List<String> argsTemps = new ArrayList<>();
-        if (ctx.argumentos() != null) {
-            for (MiLenguajeParser.ExpresionContext argCtx : ctx.argumentos().expresion()) {
-                String t = visit(argCtx);
-                argsTemps.add(t);
-            }
-        }
-        // Generar parámetros antes de la llamada
-        for (String t : argsTemps) {
-            generador.getCodigo().add("param " + t);
-        }
-        String tempResultado = generador.newTemp();
-        generador.getCodigo().add(tempResultado + " = call " + nombre + ", " + argsTemps.size());
-        return tempResultado;
-    }
-
-    // Entero: #expEntero
-    @Override
-    public String visitExpEntero(MiLenguajeParser.ExpEnteroContext ctx) {
-        String literal = ctx.INTEGER().getText();
-        System.out.println("🎯 VISITOR: Encontré número entero -> " + literal);
-        String temp = generador.newTemp();
-        generador.getCodigo().add(temp + " = " + literal);
-        return temp;
-    }
-
-    // Variable: #expVariable
+    
     @Override
     public String visitExpVariable(MiLenguajeParser.ExpVariableContext ctx) {
         String variable = ctx.ID().getText();
         System.out.println("🎯 VISITOR: Encontré variable -> " + variable);
         return variable;
     }
-
-    // Decimal: #expDecimal
+    
     @Override
-    public String visitExpDecimal(MiLenguajeParser.ExpDecimalContext ctx) {
-        String literal = ctx.DECIMAL().getText();
-        System.out.println("🎯 VISITOR: Encontré número decimal -> " + literal);
-        String temp = generador.newTemp();
-        generador.getCodigo().add(temp + " = " + literal);
-        return temp;
+    public String visitExpEntero(MiLenguajeParser.ExpEnteroContext ctx) {
+        String numero = ctx.INTEGER().getText();
+        System.out.println("🎯 VISITOR: Encontré número -> " + numero);
+        return numero;
     }
-
-    // Cadena: #expCadena
-    @Override
-    public String visitExpCadena(MiLenguajeParser.ExpCadenaContext ctx) {
-        String literal = ctx.STRING_LITERAL().getText();
-        System.out.println("🎯 VISITOR: Encontré cadena -> " + literal);
-        String temp = generador.newTemp();
-        generador.getCodigo().add(temp + " = " + literal);
-        return temp;
-    }
-
-    // Carácter: #expCaracter
-    @Override
-    public String visitExpCaracter(MiLenguajeParser.ExpCaracterContext ctx) {
-        String literal = ctx.CHARACTER().getText();
-        System.out.println("🎯 VISITOR: Encontré carácter -> " + literal);
-        String temp = generador.newTemp();
-        generador.getCodigo().add(temp + " = " + literal);
-        return temp;
-    }
-
-    // Paréntesis: #expParentizada
+    
     @Override
     public String visitExpParentizada(MiLenguajeParser.ExpParentizadaContext ctx) {
         System.out.println("🎯 VISITOR: Encontré expresión entre paréntesis");
         return visit(ctx.expresion());
     }
-
-    // Si tiene AND/OR en la gramática, puede agregar overrides para #expAnd y #expOr si desea manejo especial:
-    @Override
-    public String visitExpAnd(MiLenguajeParser.ExpAndContext ctx) {
-        // Expresión lógica AND: visit left y right, luego genOperacionBinaria con "&&"
-        String left = visit(ctx.expresion(0));
-        String right = visit(ctx.expresion(1));
-        System.out.println("🎯 VISITOR: Encontré AND lógico");
-        return generador.genOperacionBinaria("&&", left, right);
-    }
-    @Override
-    public String visitExpOr(MiLenguajeParser.ExpOrContext ctx) {
-        String left = visit(ctx.expresion(0));
-        String right = visit(ctx.expresion(1));
-        System.out.println("🎯 VISITOR: Encontré OR lógico");
-        return generador.genOperacionBinaria("||", left, right);
-    }
-
-    // Visit programa, declaraciones, asignaciones, if, etc., como ya tenga implementados.
-    @Override
-    public String visitPrograma(MiLenguajeParser.ProgramaContext ctx) {
-        System.out.println("🎯 VISITOR: Iniciando recorrido del programa");
-        for (MiLenguajeParser.SentenciaContext s : ctx.sentencia()) {
-            visit(s);
-        }
-        System.out.println("🎯 VISITOR: Programa completado");
-        return null;
-    }
-
-    @Override
-    public String visitAsignacion(MiLenguajeParser.AsignacionContext ctx) {
-        String variable = ctx.ID().getText();
-        System.out.println("🎯 VISITOR: Encontré asignación -> " + variable);
-        String resultado = visit(ctx.expresion());
-        System.out.println("🎯 VISITOR: Generando asignación final...");
-        generador.genAsignacion(variable, resultado);
-        return null;
-    }
-
+    
+    // Métodos adicionales simplificados
     @Override
     public String visitDeclaracionVariable(MiLenguajeParser.DeclaracionVariableContext ctx) {
         String variable = ctx.ID().getText();
         String tipo = ctx.tipo().getText();
         System.out.println("🎯 VISITOR: Declaración de variable " + tipo + " " + variable);
-        if (ctx.expresion() != null) {
-            String exprTemp = visit(ctx.expresion());
-            generador.genAsignacion(variable, exprTemp);
-        }
+        // En versión básica, no generamos código para declaraciones
         return null;
     }
-
+    
     @Override
-    public String visitSentenciaIf(MiLenguajeParser.SentenciaIfContext ctx) {
-        System.out.println("🎯 VISITOR: Encontré sentencia IF");
-        String condicionTemp = visit(ctx.expresion());
-        String labelElse = generador.newLabel();
-        String labelFin = generador.newLabel();
-        generador.genIfFalse(condicionTemp, labelElse);
-        visit(ctx.bloque(0));
-        if (ctx.ELSE() != null) {
-            generador.genGoto(labelFin);
-            generador.genLabel(labelElse);
-            visit(ctx.bloque(1));
-            generador.genLabel(labelFin);
+    public String visitRetorno(MiLenguajeParser.RetornoContext ctx) {
+        System.out.println("🎯 VISITOR: Encontré return");
+        if (ctx.expresion() != null) {
+            String valor = visit(ctx.expresion());
+            generador.getCodigo().add("return " + valor);
         } else {
-            generador.genLabel(labelElse);
+            generador.getCodigo().add("return");
         }
-        System.out.println("🎯 VISITOR: IF completado");
         return null;
     }
-
-    // ... demás overrides (visitDeclaracionFuncion, visitBloque, visitRetorno, etc.) ...
 }
