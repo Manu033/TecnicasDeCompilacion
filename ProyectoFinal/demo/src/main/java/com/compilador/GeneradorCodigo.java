@@ -64,6 +64,32 @@ public class GeneradorCodigo {
         
         System.out.println("🔧 GENERADOR: Generé -> " + instruccion);
     }
+
+    public void genAsignacionArray(String array, String indice, String valor) {
+    String instr = array + "[" + indice + "] = " + valor;
+    System.out.println("🔧 GENERADOR: Generé arreglo -> " + instr);
+    codigo.add(instr);
+}
+
+public String genCall(String nombreFunc, List<String> args) {
+    // Crea un nuevo temporal
+    String temp = "t" + (tempCounter++);
+    // Construye la instrucción: tX = call nombreFunc, arg1, arg2, ...
+    StringBuilder instr = new StringBuilder(temp + " = call " + nombreFunc);
+    for (String a : args) {
+        instr.append(", ").append(a);
+    }
+    codigo.add(instr.toString());
+    return temp;
+}
+
+public String genLoadArray(String array, String indice) {
+    String temp = "t" + (tempCounter++);
+    String instr = temp + " = " + array + "[" + indice + "]";
+    System.out.println("🔧 GENERADOR: Generé carga -> " + instr);
+    codigo.add(instr);
+    return temp;
+}
     
     /**
      * Genera una etiqueta: L0:

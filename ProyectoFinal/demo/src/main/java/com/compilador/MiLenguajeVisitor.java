@@ -135,6 +135,13 @@ public interface MiLenguajeVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitExpBinaria(MiLenguajeParser.ExpBinariaContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code ExpLlamada}
+	 * labeled alternative in {@link MiLenguajeParser#expresion}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitExpLlamada(MiLenguajeParser.ExpLlamadaContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code expOr}
 	 * labeled alternative in {@link MiLenguajeParser#expresion}.
 	 * @param ctx the parse tree

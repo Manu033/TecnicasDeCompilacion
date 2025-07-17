@@ -256,6 +256,18 @@ public class MiLenguajeBaseListener implements MiLenguajeListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterExpLlamada(MiLenguajeParser.ExpLlamadaContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitExpLlamada(MiLenguajeParser.ExpLlamadaContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterExpOr(MiLenguajeParser.ExpOrContext ctx) { }
 	/**
 	 * {@inheritDoc}

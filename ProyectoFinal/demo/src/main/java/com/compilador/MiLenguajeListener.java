@@ -216,6 +216,18 @@ public interface MiLenguajeListener extends ParseTreeListener {
 	 */
 	void exitExpBinaria(MiLenguajeParser.ExpBinariaContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code ExpLlamada}
+	 * labeled alternative in {@link MiLenguajeParser#expresion}.
+	 * @param ctx the parse tree
+	 */
+	void enterExpLlamada(MiLenguajeParser.ExpLlamadaContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code ExpLlamada}
+	 * labeled alternative in {@link MiLenguajeParser#expresion}.
+	 * @param ctx the parse tree
+	 */
+	void exitExpLlamada(MiLenguajeParser.ExpLlamadaContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code expOr}
 	 * labeled alternative in {@link MiLenguajeParser#expresion}.
 	 * @param ctx the parse tree

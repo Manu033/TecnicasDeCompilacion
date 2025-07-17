@@ -1,6 +1,6 @@
 // Código de tres direcciones generado automáticamente
 // Archivo: ejemplo_correcto_codigo_optimizado.txt
-// Total de instrucciones: 31
+// Total de instrucciones: 34
 
   0: func_sumar:
   1: t0 = a + b
@@ -10,26 +10,29 @@
   5: return resultado
   6: func_main:
   7: contadorGlobal = 0
-  8: valorPi = null
-  9: inicial = null
- 10: numeros = 0
- 11: numeros = 1
- 12: numeros = 2
- 13: t2 = null + null
- 14: temp = t2
- 15: t3 = temp * 2
- 16: temp = t3
- 17: t4 = temp / 3
- 18: temp = t4
- 19: t5 = temp % 5
- 20: temp = t5
- 21: estado = null
- 22: 0 = estado
- 23: valorPi = temp
- 24: inicial = null
- 25: if !0 goto L0
- 26: t6 = estado + 10
- 27: auxiliar = t6
- 28: estado = auxiliar
- 29: L0:
- 30: return estado
+  8: valorPi = 3.14
+  9: inicial = 'M'
+ 10: numeros[0] = 10
+ 11: numeros[1] = 20
+ 12: numeros[2] = 30
+ 13: t2 = numeros[0]
+ 14: t3 = numeros[1]
+ 15: t4 = t2 + t3
+ 16: temp = t4
+ 17: t5 = temp * 2
+ 18: temp = t5
+ 19: t6 = temp / 3
+ 20: temp = t6
+ 21: t7 = temp % 5
+ 22: temp = t7
+ 23: t8 = call sumar, temp, 5
+ 24: estado = t8
+ 25: contadorGlobal = estado
+ 26: valorPi = temp
+ 27: inicial = 'X'
+ 28: if !0 goto L0
+ 29: t9 = estado + 10
+ 30: auxiliar = t9
+ 31: estado = auxiliar
+ 32: L0:
+ 33: return estado
