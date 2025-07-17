@@ -1,16 +1,35 @@
 // Código de tres direcciones generado automáticamente
 // Archivo: ejemplo_correcto_codigo_optimizado.txt
-// Total de instrucciones: 12
+// Total de instrucciones: 31
 
   0: func_sumar:
   1: t0 = a + b
   2: resultado = t0
-  3: return resultado
-  4: func_main:
-  5: estado = null
-  6: if !0 goto L0
-  7: t6 = estado + 10
-  8: auxiliar = t6
-  9: estado = auxiliar
- 10: L0:
- 11: return estado
+  3: t1 = contadorGlobal + 1
+  4: contadorGlobal = t1
+  5: return resultado
+  6: func_main:
+  7: contadorGlobal = 0
+  8: valorPi = null
+  9: inicial = null
+ 10: numeros = 0
+ 11: numeros = 1
+ 12: numeros = 2
+ 13: t2 = null + null
+ 14: temp = t2
+ 15: t3 = temp * 2
+ 16: temp = t3
+ 17: t4 = temp / 3
+ 18: temp = t4
+ 19: t5 = temp % 5
+ 20: temp = t5
+ 21: estado = null
+ 22: 0 = estado
+ 23: valorPi = temp
+ 24: inicial = null
+ 25: if !0 goto L0
+ 26: t6 = estado + 10
+ 27: auxiliar = t6
+ 28: estado = auxiliar
+ 29: L0:
+ 30: return estado
