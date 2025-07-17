@@ -1,0 +1,9 @@
+// Código de tres direcciones generado automáticamente
+// Archivo: ejemploInforme_codigo_intermedio.txt
+// Total de instrucciones: 5
+
+  0: func_main:
+  1: a[0] = 10
+  2: a[1] = 20
+  3: t0 = a[1]
+  4: uno = t0
