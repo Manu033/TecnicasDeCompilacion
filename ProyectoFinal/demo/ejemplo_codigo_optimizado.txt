@@ -1,0 +1,8 @@
+// Código de tres direcciones generado automáticamente
+// Archivo: ejemplo_codigo_optimizado.txt
+// Total de instrucciones: 4
+
+  0: func_main:
+  1: a = 0
+  2: a = 1
+  3: a = 2
