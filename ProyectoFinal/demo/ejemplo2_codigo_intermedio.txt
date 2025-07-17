@@ -1,17 +1,6 @@
 // Código de tres direcciones generado automáticamente
 // Archivo: ejemplo2_codigo_intermedio.txt
-// Total de instrucciones: 13
+// Total de instrucciones: 2
 
-  0: t0 = 3
-  1: b = t0
-  2: t1 = 3
-  3: c = t1
-  4: t2 = null - null
-  5: t3 = t2 - null
-  6: res1 = t3
-  7: t4 = 0
-  8: d = t4
-  9: t5 = 0
- 10: // ⚠️ COMPILACIÓN: División por cero detectada: null / 0
- 11: t6 = null / t5
- 12: div = t6
+  0: func_main:
+  1: b = 3

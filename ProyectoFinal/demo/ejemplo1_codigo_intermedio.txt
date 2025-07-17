@@ -1,43 +1,33 @@
 // Código de tres direcciones generado automáticamente
 // Archivo: ejemplo1_codigo_intermedio.txt
-// Total de instrucciones: 39
+// Total de instrucciones: 29
 
-  0: t0 = a > b
-  1: if !t0 goto L0
+  0: func_calculaMax:
+  1: if !b goto L0
   2: resultado = a
   3: goto L1
   4: L0:
   5: resultado = b
   6: L1:
-  7: t1 = 10
-  8: temp1 = t1
-  9: t2 = 5
- 10: temp2 = t2
- 11: t3 = 0
- 12: t4 = x < t3
- 13: if !t4 goto L2
- 14: t5 = 0
- 15: temp1 = t5
- 16: L2:
- 17: t6 = temp1 + y
- 18: t7 = x * t6
- 19: t8 = t7 * temp2
- 20: resultado = t8
- 21: t9 = 100
- 22: t10 = resultado > t9
- 23: if !t10 goto L4
- 24: t11 = 100
- 25: resultado = t11
- 26: L4:
- 27: t12 = 5
- 28: a = t12
- 29: t13 = 3
- 30: b = t13
- 31: param a
- 32: param b
- 33: t14 = call calculaMax, 2
- 34: res1 = t14
- 35: param a
- 36: param b
- 37: t15 = call calculaOperacion, 2
- 38: res2 = t15
+  7: return resultado
+  8: func_calculaOperacion:
+  9: temp1 = 10
+ 10: temp2 = 5
+ 11: if !0 goto L2
+ 12: temp1 = 0
+ 13: L2:
+ 14: t0 = temp1 + y
+ 15: t1 = x * t0
+ 16: t2 = t1 * temp2
+ 17: resultado = t2
+ 18: if !100 goto L4
+ 19: resultado = 100
+ 20: L4:
+ 21: return resultado
+ 22: func_main:
+ 23: a = 5
+ 24: b = 3
+ 25: t3 = call calculaMax, a, b
+ 26: res1 = t3
+ 27: t4 = call calculaOperacion, a, b
+ 28: res2 = t4

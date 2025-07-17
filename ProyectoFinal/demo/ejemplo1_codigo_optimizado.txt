@@ -1,0 +1,19 @@
+// Código de tres direcciones generado automáticamente
+// Archivo: ejemplo1_codigo_optimizado.txt
+// Total de instrucciones: 15
+
+  0: func_calculaMax:
+  1: if !b goto L0
+  2: resultado = a
+  3: goto L1
+  4: L0:
+  5: resultado = b
+  6: L1:
+  7: return resultado
+  8: func_main:
+  9: a = 5
+ 10: b = 3
+ 11: t3 = call calculaMax, 5, 3
+ 12: res1 = t3
+ 13: t4 = call calculaOperacion, 5, 3
+ 14: res2 = t4

@@ -155,6 +155,29 @@ public class App {
             // (Opcional) Imprimir en consola el código optimizado
             optimizador.imprimirCodigoOptimizado();
 
+
+            // === 7. RESUMEN DE COMPILACIÓN ===
+            System.out.println("\n=== 7. RESUMEN DE COMPILACIÓN ===");
+            // Nombre del archivo procesado
+            System.out.printf("   📁 Archivo procesado: %s%n", inputFileName);
+            // Número de tokens (restamos 1 si queremos excluir EOF)
+            int totalTokens = tokens.getTokens().size() - 1;
+            System.out.printf("   🔤 Tokens analizados: %d%n", totalTokens);
+            // Símbolos en la tabla
+            // Asumo que tu TablaSimbolos tiene un método para obtener la lista de símbolos registrados.
+            // Si no fuera así, ajusta el llamado al método correspondiente.
+            int totalSimbolos = tabla.getSimbolos().size();
+            System.out.printf("   📊 Símbolos en tabla: %d%n", totalSimbolos);
+            // Instrucciones generadas e instrucciones optimizadas
+            int totalGeneradas = generador.getCodigo().size();
+            int totalOpt = codigoOptimizado.size();
+            System.out.printf("   📝 Instrucciones generadas: %d%n", totalGeneradas);
+            System.out.printf("   🔧 Instrucciones optimizadas: %d%n", totalOpt);
+            // Rutas de los archivos de salida
+            System.out.printf("   📄 Archivo código intermedio: %s%n", codigoIntermedioPath);
+            System.out.printf("   📄 Archivo código optimizado: %s%n", codigoOptimizadoPath);
+
+
         } catch (IOException e) {
             System.err.println(RED + "❌ Error al leer el archivo: " + e.getMessage() + RESET);
         } catch (ParseCancellationException e) {

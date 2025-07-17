@@ -1,11 +1,20 @@
 // Código de tres direcciones generado automáticamente
 // Archivo: ejemplo_con_errores_codigo_optimizado.txt
-// Total de instrucciones: 7
+// Total de instrucciones: 16
 
   0: func_miFuncion:
-  1: t0 = 105
-  2: variableLocal = t0
-  3: return variableLocal
-  4: func_main:
-  5: resultado = null
-  6: return resultado
+  1: parametro1 = 100
+  2: t0 = 105
+  3: variableLocal = t0
+  4: variableFantasma = 42
+  5: miFuncion = 10
+  6: valorGlobal = 3.14
+  7: return variableLocal
+  8: func_main:
+  9: t3 = call 10, 5, 3.14
+ 10: resultado = t3
+ 11: t4 = resultado + 10
+ 12: valor = t4
+ 13: variableFinal = valor
+ 14: variableGlobal = valor
+ 15: return resultado
