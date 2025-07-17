@@ -64,21 +64,28 @@ public class CodigoVisitor extends MiLenguajeBaseVisitor<String> {
         return null;
     }
     
-    @Override
-    public String visitAsignacion(MiLenguajeParser.AsignacionContext ctx) {
-        String variable = ctx.ID().getText();
-        System.out.println("🎯 VISITOR: Encontré asignación -> " + variable + " = ...");
-        
-        // Procesar la expresión del lado derecho
-        System.out.println("🎯 VISITOR: Evaluando expresión del lado derecho...");
-        String resultado = visit(ctx.expresion().get(0));
-        
-        // Generar la asignación
-        System.out.println("🎯 VISITOR: Generando asignación final...");
-        generador.genAsignacion(variable, resultado);
-        
-        return null;
+@Override
+public String visitAsignacion(MiLenguajeParser.AsignacionContext ctx) {
+    String nombre = ctx.ID().getText();
+
+    // ¿Hay índice? (asignación a arreglo)
+    if (ctx.getChildCount() > 3 && ctx.getChild(1).getText().equals("[")) {
+        // ctx.expresion(0) → índice, ctx.expresion(1) → valor
+        String indice = visit(ctx.expresion(0));
+        String valor  = visit(ctx.expresion(1));
+        System.out.println("🎯 VISITOR: Asignación a arreglo -> " 
+                           + nombre + "[" + indice + "] = " + valor);
+        generador.genAsignacionArray(nombre, indice, valor);
+    } else {
+        // asignación normal
+        String valor  = visit(ctx.expresion(0));
+        System.out.println("🎯 VISITOR: Asignación simple -> " 
+                           + nombre + " = " + valor);
+        generador.genAsignacion(nombre, valor);
     }
+    return null;
+}
+
     
     @Override
     public String visitSentenciaIf(MiLenguajeParser.SentenciaIfContext ctx) {
@@ -118,6 +125,15 @@ public class CodigoVisitor extends MiLenguajeBaseVisitor<String> {
         return null;
     }
     
+@Override
+public String visitExpAccesoArreglo(MiLenguajeParser.ExpAccesoArregloContext ctx) {
+    String nombre = ctx.ID().getText();
+    String indice = visit(ctx.expresion());
+    System.out.println("🎯 VISITOR: Expresión arreglo -> " 
+                       + nombre + "[" + indice + "]");
+    return generador.genLoadArray(nombre, indice);
+}
+
     @Override
     public String visitExpBinaria(MiLenguajeParser.ExpBinariaContext ctx) {
         String operador = ctx.getChild(1).getText();
@@ -155,7 +171,39 @@ public class CodigoVisitor extends MiLenguajeBaseVisitor<String> {
         System.out.println("🎯 VISITOR: Encontré expresión entre paréntesis");
         return visit(ctx.expresion());
     }
+   
+        @Override
+    public String visitExpDecimal(MiLenguajeParser.ExpDecimalContext ctx) {
+        return ctx.DECIMAL().getText();
+    }
+
+    @Override
+    public String visitExpCaracter(MiLenguajeParser.ExpCaracterContext ctx) {
+        return ctx.CHARACTER().getText();
+    }
     
+    @Override
+    public String visitExpCadena(MiLenguajeParser.ExpCadenaContext ctx) {
+        // Dependiendo de cómo quieras representarlo en tres direcciones...
+        // Por simplicidad lo devolvemos tal cual:
+        return ctx.STRING_LITERAL().getText();
+    }
+    
+@Override
+public String visitExpFuncion(MiLenguajeParser.ExpFuncionContext ctx) {
+    // Mismo código que en visitExpLlamada:
+    String funcName = ctx.ID().getText();
+    List<String> args = new ArrayList<>();
+    // Si usas la regla 'argumentos' tendrás que visitarla:
+    if (ctx.argumentos() != null) {
+        for (MiLenguajeParser.ExpresionContext aCtx : ctx.argumentos().expresion()) {
+            args.add(visit(aCtx));
+        }
+    }
+    return generador.genCall(funcName, args);
+}
+
+
     // Métodos adicionales simplificados
     @Override
     public String visitDeclaracionVariable(MiLenguajeParser.DeclaracionVariableContext ctx) {

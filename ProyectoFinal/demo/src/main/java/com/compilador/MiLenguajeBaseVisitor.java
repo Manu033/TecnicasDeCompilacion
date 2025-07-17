@@ -157,6 +157,13 @@ public class MiLenguajeBaseVisitor<T> extends AbstractParseTreeVisitor<T> implem
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
+	@Override public T visitExpLlamada(MiLenguajeParser.ExpLlamadaContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
 	@Override public T visitExpOr(MiLenguajeParser.ExpOrContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}

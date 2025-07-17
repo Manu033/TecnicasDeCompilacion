@@ -1,4 +1,4 @@
-// package com.compilador;
+ package com.compilador;
 
 // import java.util.*;
 // import java.util.regex.*;
@@ -223,269 +223,465 @@
 //     }
 // }
 
-package com.compilador;
+// package com.compilador;
 
+// import java.util.*;
+
+// /**
+//  * Optimizador de código de tres direcciones
+//  */
+// public class Optimizador {
+    
+//     private List<String> codigo;
+    
+//     public Optimizador(List<String> codigo) {
+//         this.codigo = new ArrayList<>(codigo);
+//     }
+    
+//     /**
+//      * Realiza todas las optimizaciones disponibles
+//      */
+//     public List<String> optimizar() {
+
+//         propagarConstantes();
+//         simplificarExpresiones();
+//         eliminarCodigoMuerto();
+//         eliminarSentenciasRedundantes();
+//         return codigo;
+//     }
+
+//      /**
+//      * Propaga constantes cuando es posible
+//      */
+//     public void propagarConstantes() {
+//     Map<String,String> consts = new HashMap<>();
+//     List<String> out = new ArrayList<>();
+
+//     for (String linea : codigo) {
+//         String trimmed = linea.trim();
+//         if (trimmed.contains(" = ") && !trimmed.contains(" call ")) {
+//             // Divide en LHS y RHS
+//             String[] partes = trimmed.split("\\s*=\\s*", 2);
+//             String dest = partes[0].trim();
+//             String rhs  = partes[1].trim();
+
+//             // Sustituye constantes **solo** en RHS
+// for (Map.Entry<String,String> e : consts.entrySet()) {
+//     rhs = rhs.replaceAll("\\b" + e.getKey() + "\\b", e.getValue());
+// }
+
+
+//             // Si RHS ha quedado en literal puro, lo guardo
+//             if (rhs.matches("-?\\d+(\\.\\d+)?") || rhs.matches("'.'")) {
+//                 consts.put(dest, rhs);
+//             } else {
+//                 // Ya no constante → lo elimino del mapa
+//                 consts.remove(dest);
+//             }
+
+//             out.add(dest + " = " + rhs);
+//         } else {
+//             // No es asignación simple → propago en toda la línea
+//             String tmp = linea;
+// for (Map.Entry<String,String> e : consts.entrySet()) {
+//                 tmp = tmp.replaceAll("\\b"+e.getKey()+"\\b", e.getValue());
+//             }
+//             out.add(tmp);
+//         }
+//     }
+//     codigo = out;
+// }
+
+    
+//     /**
+//      * Simplifica expresiones constantes (ej: 2 + 3 -> 5)
+//      */
+// public void simplificarExpresiones() {
+//     List<String> out = new ArrayList<>();
+
+//     for (String linea : codigo) {
+//         if (linea.contains(" = ")) {
+//             // 1) Separa LHS y RHS
+//             String[] p = linea.split("\\s*=\\s*", 2);
+//             String dest = p[0].trim();
+//             String rhs  = p[1].trim();
+
+//             // 2) Expresión aritmética constante: “num OP num”
+//             if (rhs.matches("-?\\d+\\s*[+\\-*/%]\\s*-?\\d+")) {
+//                 String[] opParts = rhs.split("\\s*[+\\-*/%]\\s*");
+//                 int a = Integer.parseInt(opParts[0]);
+//                 int b = Integer.parseInt(opParts[1]);
+//                 char oper = rhs.replaceAll(".*?([+\\-*/%]).*", "$1").charAt(0);
+//                 int res;
+//                 switch (oper) {
+//                     case '+': res = a + b; break;
+//                     case '-': res = a - b; break;
+//                     case '*': res = a * b; break;
+//                     case '/': res = (b != 0 ? a / b : a); break;
+//                     case '%': res = (b != 0 ? a % b : a); break;
+//                     default:  res = 0;
+//                 }
+//                 out.add(dest + " = " + res);
+//                 continue;
+//             }
+
+//             // 3) Expresión lógica constante: “num COMPAR num”
+//             if (rhs.matches("-?\\d+\\s*(>=|<=|>|<|==|!=)\\s*-?\\d+")) {
+//                 String[] cmp = rhs.split("\\s*(>=|<=|==|!=|>|<)\\s*");
+//                 int a = Integer.parseInt(cmp[0]);
+//                 int b = Integer.parseInt(cmp[1]);
+//                 String oper = rhs.replaceAll(".*?(>=|<=|==|!=|>|<).*", "$1");
+//                 boolean r;
+//                 switch (oper) {
+//                     case ">":  r = a > b;  break;
+//                     case ">=": r = a >= b; break;
+//                     case "<":  r = a < b;  break;
+//                     case "<=": r = a <= b; break;
+//                     case "==": r = a == b; break;
+//                     default:   r = a != b;
+//                 }
+//                 out.add(dest + " = " + (r ? 1 : 0));
+//                 continue;
+//             }
+
+//             // 4) No es constante pura → dejo la asignación recortada
+//             out.add(dest + " = " + rhs);
+//         } else {
+//             // No es asignación → mantenla tal cual
+//             out.add(linea);
+//         }
+//     }
+//     codigo = out;
+// }
+
+
+    
+//     /**
+//      * Elimina código muerto (código inalcanzable)
+//      */
+//     public void eliminarCodigoMuerto() {
+//         Set<Integer> lineasAlcanzables = new HashSet<>();
+//         Map<String, Integer> etiquetas = new HashMap<>();
+        
+//         // Primero, identificar todas las etiquetas y sus líneas
+//         for (int i = 0; i < codigo.size(); i++) {
+//             String linea = codigo.get(i);
+//             if (linea.endsWith(":")) {
+//                 String etiqueta = linea.substring(0, linea.length() - 1);
+//                 etiquetas.put(etiqueta, i);
+//             }
+//         }
+        
+//         // Marcar líneas alcanzables con un recorrido desde el inicio
+//         marcarLineasAlcanzables(0, lineasAlcanzables, etiquetas);
+        
+//         // También asegurarnos de que main sea considerado como punto de entrada
+//         if (etiquetas.containsKey("func_main")) {
+//             marcarLineasAlcanzables(etiquetas.get("func_main"), lineasAlcanzables, etiquetas);
+//         }
+        
+//         // Eliminar líneas no alcanzables
+//         List<String> codigoOptimizado = new ArrayList<>();
+//         for (int i = 0; i < codigo.size(); i++) {
+//             if (lineasAlcanzables.contains(i)) {
+//                 codigoOptimizado.add(codigo.get(i));
+//             }
+//         }
+        
+//         codigo = codigoOptimizado;
+//     }
+    
+//     /**
+//      * Recursivamente marca líneas alcanzables
+//      */
+//     private void marcarLineasAlcanzables(int linea, Set<Integer> lineasAlcanzables, Map<String, Integer> etiquetas) {
+//         // Si ya visitamos esta línea, retornar
+//         if (linea >= codigo.size() || lineasAlcanzables.contains(linea)) {
+//             return;
+//         }
+        
+//         lineasAlcanzables.add(linea);
+//         String instruccion = codigo.get(linea);
+        
+//         // Si es un goto incondicional
+//         if (instruccion.startsWith("goto ")) {
+//             String etiqueta = instruccion.substring(5);
+//             if (etiquetas.containsKey(etiqueta)) {
+//                 marcarLineasAlcanzables(etiquetas.get(etiqueta), lineasAlcanzables, etiquetas);
+//             }
+//             return; // No continúa con la siguiente instrucción
+//         }
+        
+//         // Si es un goto condicional
+//         if (instruccion.startsWith("if ")) {
+//             String[] partes = instruccion.split(" goto ");
+//             if (partes.length == 2) {
+//                 String etiqueta = partes[1];
+//                 if (etiquetas.containsKey(etiqueta)) {
+//                     marcarLineasAlcanzables(etiquetas.get(etiqueta), lineasAlcanzables, etiquetas);
+//                 }
+//             }
+//         }
+        
+//         // Si es return, no continúa con la siguiente instrucción
+//         if (instruccion.equals("return") || instruccion.startsWith("return ")) {
+//             return;
+//         }
+        
+//         // Continuar con la siguiente instrucción
+//         marcarLineasAlcanzables(linea + 1, lineasAlcanzables, etiquetas);
+//     }
+    
+   
+    
+//     /**
+//      * Elimina sentencias redundantes (asignación a sí mismo, etc)
+//      */
+//     public void eliminarSentenciasRedundantes() {
+//         List<String> codigoOptimizado = new ArrayList<>();
+        
+//         for (String linea : codigo) {
+//             // Eliminar asignaciones a sí mismo (a = a)
+//             if (linea.contains(" = ")) {
+//                 String[] partes = linea.split(" = ");
+//                 if (partes.length == 2) {
+//                     String destino = partes[0].trim();
+//                     String valor = partes[1].trim();
+                    
+//                     if (destino.equals(valor)) {
+//                         continue; // Saltar esta línea
+//                     }
+//                 }
+//             }
+            
+//             codigoOptimizado.add(linea);
+//         }
+        
+//         codigo = codigoOptimizado;
+//     }
+    
+//     /**
+//      * Obtiene el código optimizado
+//      */
+//     public List<String> getCodigoOptimizado() {
+//         return codigo;
+//     }
+    
+//     /**
+//      * Imprime el código optimizado
+//      */
+//     public void imprimirCodigoOptimizado() {
+//         System.out.println("\n=== CÓDIGO OPTIMIZADO ===");
+//         for (int i = 0; i < codigo.size(); i++) {
+//             System.out.println(i + ": " + codigo.get(i));
+//         }
+//     }
+// }
+
+
+import java.io.*;
 import java.util.*;
 
 /**
- * Optimizador de código de tres direcciones
+ * Optimizador de código de tres direcciones (texto plano)
  */
 public class Optimizador {
-    
     private List<String> codigo;
-    
+
     public Optimizador(List<String> codigo) {
+        // Copia defensiva
         this.codigo = new ArrayList<>(codigo);
     }
-    
+
     /**
-     * Realiza todas las optimizaciones disponibles
+     * Ejecuta todas las fases de optimización:
+     * 1) propagación de constantes
+     * 2) plegado de expresiones constantes
+     * 3) eliminación de código muerto
+     * 4) eliminación de asignaciones redundantes
      */
     public List<String> optimizar() {
-        eliminarCodigoMuerto();
         propagarConstantes();
         simplificarExpresiones();
+        eliminarCodigoMuerto();
         eliminarSentenciasRedundantes();
         return codigo;
     }
-    
+
     /**
-     * Elimina código muerto (código inalcanzable)
+     * Fase 1: Propagar constantes solo en el RHS de asignaciones simples.
      */
-    public void eliminarCodigoMuerto() {
-        Set<Integer> lineasAlcanzables = new HashSet<>();
+    private void propagarConstantes() {
+        Map<String,String> consts = new HashMap<>();
+        List<String> out = new ArrayList<>();
+        for (String linea : codigo) {
+            String trimmed = linea.trim();
+            if (trimmed.contains(" = ") && !trimmed.contains(" call ")) {
+                String[] partes = trimmed.split("\\s*=\\s*", 2);
+                String dest = partes[0].trim();
+                String rhs  = partes[1].trim();
+                // sustituir solo en RHS
+                for (Map.Entry<String,String> e : consts.entrySet()) {
+                    rhs = rhs.replaceAll("\\b" + e.getKey() + "\\b", e.getValue());
+                }
+                // actualizar mapa si RHS es literal
+                if (rhs.matches("-?\\d+(\\.\\d+)?") || rhs.matches("'.'")) {
+                    consts.put(dest, rhs);
+                } else {
+                    consts.remove(dest);
+                }
+                out.add(dest + " = " + rhs);
+            } else {
+                // propagar en toda la línea
+                String tmp = linea;
+                for (Map.Entry<String,String> e : consts.entrySet()) {
+                    tmp = tmp.replaceAll("\\b" + e.getKey() + "\\b", e.getValue());
+                }
+                out.add(tmp);
+            }
+        }
+        codigo = out;
+    }
+
+    /**
+     * Fase 2: Plegar expresiones aritméticas y lógicas constantes.
+     */
+    private void simplificarExpresiones() {
+        List<String> out = new ArrayList<>();
+        for (String linea : codigo) {
+            if (linea.contains(" = ")) {
+                String[] p = linea.split("\\s*=\\s*", 2);
+                String dest = p[0].trim();
+                String rhs  = p[1].trim();
+                // aritmética constante
+                if (rhs.matches("-?\\d+\\s*[+\\-*/%]\\s*-?\\d+")) {
+                    String[] opn = rhs.split("\\s*[+\\-*/%]\\s*");
+                    int a = Integer.parseInt(opn[0]);
+                    int b = Integer.parseInt(opn[1]);
+                    char op = rhs.replaceAll(".*?([+\\-*/%]).*", "$1").charAt(0);
+                    int res;
+                    switch (op) {
+                        case '+': res = a + b; break;
+                        case '-': res = a - b; break;
+                        case '*': res = a * b; break;
+                        case '/': res = (b!=0? a/b : a); break;
+                        default : res = (b!=0? a%b : a);
+                    }
+                    out.add(dest + " = " + res);
+                    continue;
+                }
+                // lógica constante
+                if (rhs.matches("-?\\d+\\s*(>=|<=|>|<|==|!=)\\s*-?\\d+")) {
+                    String[] cmp = rhs.split("\\s*(>=|<=|==|!=|>|<)\\s*");
+                    int a = Integer.parseInt(cmp[0]);
+                    int b = Integer.parseInt(cmp[1]);
+                    String op = rhs.replaceAll(".*?(>=|<=|==|!=|>|<).*", "$1");
+                    boolean r;
+                    switch (op) {
+                        case ">":  r = a>b;  break;
+                        case ">=": r = a>=b; break;
+                        case "<":  r = a<b;  break;
+                        case "<=": r = a<=b; break;
+                        case "==": r = a==b; break;
+                        default:    r = a!=b; break;
+                    }
+                    out.add(dest + " = " + (r?1:0));
+                    continue;
+                }
+                // no es constante pura
+                out.add(dest + " = " + rhs);
+            } else {
+                out.add(linea);
+            }
+        }
+        codigo = out;
+    }
+
+    /**
+     * Fase 3: Eliminación de código muerto (basado en alcance y uso de variables).
+     */
+    private void eliminarCodigoMuerto() {
+        // Mapear etiquetas a índices de línea
         Map<String, Integer> etiquetas = new HashMap<>();
-        
-        // Primero, identificar todas las etiquetas y sus líneas
         for (int i = 0; i < codigo.size(); i++) {
-            String linea = codigo.get(i);
+            String linea = codigo.get(i).trim();
             if (linea.endsWith(":")) {
                 String etiqueta = linea.substring(0, linea.length() - 1);
                 etiquetas.put(etiqueta, i);
             }
         }
         
-        // Marcar líneas alcanzables con un recorrido desde el inicio
-        marcarLineasAlcanzables(0, lineasAlcanzables, etiquetas);
-        
-        // También asegurarnos de que main sea considerado como punto de entrada
+        // Conjunto de líneas alcanzables
+        Set<Integer> alcanzables = new HashSet<>();
+        // Marcar desde el comienzo y desde func_main si existe
+        marcarAlcanzables(0, alcanzables, etiquetas);
         if (etiquetas.containsKey("func_main")) {
-            marcarLineasAlcanzables(etiquetas.get("func_main"), lineasAlcanzables, etiquetas);
+            marcarAlcanzables(etiquetas.get("func_main"), alcanzables, etiquetas);
         }
         
-        // Eliminar líneas no alcanzables
-        List<String> codigoOptimizado = new ArrayList<>();
+        // Reconstruir sólo con líneas alcanzables
+        List<String> out = new ArrayList<>();
         for (int i = 0; i < codigo.size(); i++) {
-            if (lineasAlcanzables.contains(i)) {
-                codigoOptimizado.add(codigo.get(i));
+            if (alcanzables.contains(i)) {
+                out.add(codigo.get(i));
             }
         }
-        
-        codigo = codigoOptimizado;
+        codigo = out;
     }
-    
-    /**
-     * Recursivamente marca líneas alcanzables
-     */
-    private void marcarLineasAlcanzables(int linea, Set<Integer> lineasAlcanzables, Map<String, Integer> etiquetas) {
-        // Si ya visitamos esta línea, retornar
-        if (linea >= codigo.size() || lineasAlcanzables.contains(linea)) {
+
+    // Recursión para marcar alcance via saltos y flujo secuencial
+    private void marcarAlcanzables(int idx, Set<Integer> alc, Map<String,Integer> etiquetas) {
+        if (idx < 0 || idx >= codigo.size() || alc.contains(idx)) {
             return;
         }
-        
-        lineasAlcanzables.add(linea);
-        String instruccion = codigo.get(linea);
-        
-        // Si es un goto incondicional
-        if (instruccion.startsWith("goto ")) {
-            String etiqueta = instruccion.substring(5);
-            if (etiquetas.containsKey(etiqueta)) {
-                marcarLineasAlcanzables(etiquetas.get(etiqueta), lineasAlcanzables, etiquetas);
+        alc.add(idx);
+        String linea = codigo.get(idx).trim();
+        // Goto incondicional: "goto etiqueta"
+        if (linea.startsWith("goto ")) {
+            String et = linea.substring(5).trim();
+            if (etiquetas.containsKey(et)) {
+                marcarAlcanzables(etiquetas.get(et), alc, etiquetas);
             }
-            return; // No continúa con la siguiente instrucción
+            return; // no seguir secuencialmente
         }
-        
-        // Si es un goto condicional
-        if (instruccion.startsWith("if ")) {
-            String[] partes = instruccion.split(" goto ");
-            if (partes.length == 2) {
-                String etiqueta = partes[1];
-                if (etiquetas.containsKey(etiqueta)) {
-                    marcarLineasAlcanzables(etiquetas.get(etiqueta), lineasAlcanzables, etiquetas);
-                }
+        // If condicional: "if <cond> goto etiqueta"
+        if (linea.startsWith("if ") && linea.contains(" goto ")) {
+            String[] partes = linea.split(" goto ");
+            String et = partes[1].trim();
+            if (etiquetas.containsKey(et)) {
+                marcarAlcanzables(etiquetas.get(et), alc, etiquetas);
             }
         }
-        
-        // Si es return, no continúa con la siguiente instrucción
-        if (instruccion.equals("return") || instruccion.startsWith("return ")) {
+        // Return detiene flujo
+        if (linea.startsWith("return")) {
             return;
         }
-        
-        // Continuar con la siguiente instrucción
-        marcarLineasAlcanzables(linea + 1, lineasAlcanzables, etiquetas);
+        // Flujo secuencial
+        marcarAlcanzables(idx + 1, alc, etiquetas);
     }
-    
+
     /**
-     * Propaga constantes cuando es posible
+     * Fase 4: Eliminar asignaciones redundantes x = x.
      */
-    public void propagarConstantes() {
-        Map<String, String> constantValues = new HashMap<>();
-        List<String> codigoOptimizado = new ArrayList<>();
-        
-        for (String linea : codigo) {
-            // Buscar asignaciones de constantes
-            if (linea.contains(" = ") && !linea.contains(" + ") && !linea.contains(" - ") && 
-                !linea.contains(" * ") && !linea.contains(" / ") && !linea.contains(" % ") &&
-                !linea.contains(" call ")) {
-                
-                String[] partes = linea.split(" = ");
-                if (partes.length == 2) {
-                    String destino = partes[0].trim();
-                    String valor = partes[1].trim();
-                    
-                    // Si es un número o un carácter literal
-                    if (valor.matches("-?\\d+") || valor.matches("-?\\d+\\.\\d+") || 
-                        (valor.startsWith("'") && valor.endsWith("'"))) {
-                        constantValues.put(destino, valor);
-                        codigoOptimizado.add(linea);
-                        continue;
-                    }
-                    
-                    // Reemplazar variables con sus valores constantes conocidos
-                    if (constantValues.containsKey(valor)) {
-                        constantValues.put(destino, constantValues.get(valor));
-                        codigoOptimizado.add(destino + " = " + constantValues.get(valor));
-                        continue;
-                    }
-                }
-            }
-            
-            // Reemplazar usos de constantes en expresiones
-            String lineaOptimizada = linea;
-            for (Map.Entry<String, String> entry : constantValues.entrySet()) {
-                // Solo reemplazar si es un operando completo (no parte de otro identificador)
-                String regex = "\\b" + entry.getKey() + "\\b";
-                lineaOptimizada = lineaOptimizada.replaceAll(regex, entry.getValue());
-            }
-            
-            codigoOptimizado.add(lineaOptimizada);
-        }
-        
-        codigo = codigoOptimizado;
-    }
-    
-    /**
-     * Simplifica expresiones constantes (ej: 2 + 3 -> 5)
-     */
-    public void simplificarExpresiones() {
-        List<String> codigoOptimizado = new ArrayList<>();
-        
+    private void eliminarSentenciasRedundantes() {
+        List<String> out = new ArrayList<>();
         for (String linea : codigo) {
             if (linea.contains(" = ")) {
-                String[] partes = linea.split(" = ");
-                if (partes.length == 2) {
-                    String destino = partes[0].trim();
-                    String expr = partes[1].trim();
-                    
-                    // Evaluar expresiones aritméticas constantes
-                    if (expr.matches("-?\\d+ [+\\-*/%] -?\\d+")) {
-                        String[] operacion = expr.split(" ");
-                        int a = Integer.parseInt(operacion[0]);
-                        String op = operacion[1];
-                        int b = Integer.parseInt(operacion[2]);
-                        int resultado = 0;
-                        
-                        switch (op) {
-                            case "+": resultado = a + b; break;
-                            case "-": resultado = a - b; break;
-                            case "*": resultado = a * b; break;
-                            case "/": 
-                                if (b != 0) resultado = a / b; 
-                                else {
-                                    codigoOptimizado.add(linea); // División por cero, mantener original
-                                    continue;
-                                }
-                                break;
-                            case "%": 
-                                if (b != 0) resultado = a % b; 
-                                else {
-                                    codigoOptimizado.add(linea); // Módulo por cero, mantener original
-                                    continue;
-                                }
-                                break;
-                        }
-                        
-                        codigoOptimizado.add(destino + " = " + resultado);
-                        continue;
-                    }
-                    
-                    // Simplificar expresiones lógicas constantes (para enteros)
-                    if (expr.matches("-?\\d+ [<>]=? -?\\d+") || expr.matches("-?\\d+ [!=]= -?\\d+")) {
-                        String[] operacion = expr.split(" ");
-                        int a = Integer.parseInt(operacion[0]);
-                        String op = operacion[1];
-                        int b = Integer.parseInt(operacion[2]);
-                        boolean resultado = false;
-                        
-                        switch (op) {
-                            case ">": resultado = a > b; break;
-                            case ">=": resultado = a >= b; break;
-                            case "<": resultado = a < b; break;
-                            case "<=": resultado = a <= b; break;
-                            case "==": resultado = a == b; break;
-                            case "!=": resultado = a != b; break;
-                        }
-                        
-                        codigoOptimizado.add(destino + " = " + (resultado ? 1 : 0));
-                        continue;
-                    }
+                String[] p = linea.split("\\s*=\\s*", 2);
+                if (p[0].trim().equals(p[1].trim())) {
+                    continue;
                 }
             }
-            
-            codigoOptimizado.add(linea);
+            out.add(linea);
         }
-        
-        codigo = codigoOptimizado;
+        codigo = out;
     }
-    
+
     /**
-     * Elimina sentencias redundantes (asignación a sí mismo, etc)
-     */
-    public void eliminarSentenciasRedundantes() {
-        List<String> codigoOptimizado = new ArrayList<>();
-        
-        for (String linea : codigo) {
-            // Eliminar asignaciones a sí mismo (a = a)
-            if (linea.contains(" = ")) {
-                String[] partes = linea.split(" = ");
-                if (partes.length == 2) {
-                    String destino = partes[0].trim();
-                    String valor = partes[1].trim();
-                    
-                    if (destino.equals(valor)) {
-                        continue; // Saltar esta línea
-                    }
-                }
-            }
-            
-            codigoOptimizado.add(linea);
-        }
-        
-        codigo = codigoOptimizado;
-    }
-    
-    /**
-     * Obtiene el código optimizado
-     */
-    public List<String> getCodigoOptimizado() {
-        return codigo;
-    }
-    
-    /**
-     * Imprime el código optimizado
+     * Para depuración: imprime el código optimizado.
      */
     public void imprimirCodigoOptimizado() {
-        System.out.println("\n=== CÓDIGO OPTIMIZADO ===");
+        System.out.println("=== CÓDIGO OPTIMIZADO ===");
         for (int i = 0; i < codigo.size(); i++) {
             System.out.println(i + ": " + codigo.get(i));
         }

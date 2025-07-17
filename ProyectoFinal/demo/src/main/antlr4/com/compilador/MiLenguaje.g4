@@ -109,6 +109,7 @@ expresion
     | DECIMAL                                 #expDecimal
     | CHARACTER                               #expCaracter
     | STRING_LITERAL                          #expCadena
+    | ID PA expresion (',' expresion)* PC   # ExpLlamada
     ;
 
 // Lista de argumentos en llamadas a función
